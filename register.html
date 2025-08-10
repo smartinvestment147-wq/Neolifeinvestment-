@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register - Smart Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Load Google reCAPTCHA JS -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+  <header class="header">
+    <h1>📝 Register</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Login</a>
+    </nav>
+  </header>
+
+  <main class="mains">
+    <section>
+      <h2>Create an Account</h2>
+
+      <form id="registerForm" method="POST" action="/register">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+
+        <!-- Google reCAPTCHA -->
+        <div class="g-recaptcha" data-sitekey="6LfcDqArAAAAAGCD5YMTi8adzmCaPutdOzOi8r3t"></div><br>
+
+        <button type="submit" class="btn">Register</button>
+      </form>
+
+      <p>Already have an account? <a href="login.html">Login here</a></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
