@@ -1,4 +1,4 @@
-// main.js - Smart Investment (Fixed Register + Login + Dashboard + Admin Sync)
+// main.js - Smart Investment (Register + Login + Dashboard + Admin + Deposit/Invest Flow)
 
 // ---------------- Helper functions ----------------
 function getUsers() {
@@ -45,9 +45,7 @@ function loginUser(event) {
     return;
   }
 
-  // adana logged-in user a localStorage
   localStorage.setItem("currentUser", JSON.stringify(user));
-
   alert("Login successful!");
   window.location.href = "dashboard.html";
 }
@@ -70,21 +68,18 @@ function loadDashboard() {
   document.getElementById("userBalance").innerText = user.balance;
   document.getElementById("userInvested").innerText = user.invested;
 
-  // load histories
   loadWithdrawHistory(user.email);
   loadInvestments(user.email);
 }
 
-// ---------------- Deposit (Step 1 → Go to confirm page) ----------------
+// ---------------- Deposit ----------------
 function depositFunds(event) {
   event.preventDefault();
   const amount = document.getElementById("depositAmount").value;
   const plan = document.getElementById("depositPlan").value;
-
   window.location.href = `confirm-deposit.html?amount=${amount}&plan=${encodeURIComponent(plan)}`;
 }
 
-// Deposit (Step 2 → Confirm)
 function depositFundsDirect(amount, plan) {
   const current = JSON.parse(localStorage.getItem("currentUser"));
   if (!current) { window.location.href = "login.html"; return; }
@@ -111,15 +106,53 @@ function depositFundsDirect(amount, plan) {
   window.location.href = "dashboard.html";
 }
 
-// ---------------- Withdraw (Step 1 → Go to confirm page) ----------------
+// ---------------- Investment ----------------
+function investFunds(event) {
+  event.preventDefault();
+  const amount = document.getElementById("investAmount").value;
+  const plan = document.getElementById("investPlan").value;
+  window.location.href = `confirm-invest.html?amount=${amount}&plan=${encodeURIComponent(plan)}`;
+}
+
+function confirmInvest(amount, plan) {
+  const current = JSON.parse(localStorage.getItem("currentUser"));
+  if (!current) { window.location.href = "login.html"; return; }
+
+  let users = getUsers();
+  const idx = users.findIndex(u => u.email === current.email);
+  if (idx === -1) return;
+
+  const amt = parseFloat(amount);
+  if (!amt || amt <= 0) { alert("Invalid amount"); return; }
+  if (users[idx].balance < amt) { alert("Insufficient balance"); return; }
+
+  users[idx].balance -= amt;
+  users[idx].invested += amt;
+  saveUsers(users);
+
+  let invests = JSON.parse(localStorage.getItem("investments") || "[]");
+  invests.push({
+    username: users[idx].username,
+    email: users[idx].email,
+    amount: amt,
+    plan,
+    date: new Date().toLocaleString(),
+    status: "Active"
+  });
+  localStorage.setItem("investments", JSON.stringify(invests));
+
+  localStorage.setItem("currentUser", JSON.stringify(users[idx]));
+  alert("Investment successful!");
+  window.location.href = "dashboard.html";
+}
+
+// ---------------- Withdraw ----------------
 function withdrawFunds(event) {
   event.preventDefault();
   const amount = document.getElementById("withdrawAmount").value;
-
   window.location.href = `confirm-withdraw.html?amount=${amount}`;
 }
 
-// Withdraw (Step 2 → Confirm)
 function withdrawFundsDirect(amount) {
   const current = JSON.parse(localStorage.getItem("currentUser"));
   if (!current) { window.location.href = "login.html"; return; }
@@ -200,15 +233,13 @@ function approveDeposit(index) {
   let users = getUsers();
   const idx = users.findIndex(u => u.email === dep.email);
   if (idx !== -1) {
-    users[idx].balance += dep.amount;
-    users[idx].invested += dep.amount;
+    users[idx].balance += dep.amount; // ✅ Deposit → Balance kawai
     saveUsers(users);
 
-    let invests = JSON.parse(localStorage.getItem("investments") || "[]");
-    invests.push({ ...dep, status: "Approved" });
-    localStorage.setItem("investments", JSON.stringify(invests));
+    let deposits = JSON.parse(localStorage.getItem("depositHistory") || "[]");
+    deposits.push({ ...dep, status: "Approved" });
+    localStorage.setItem("depositHistory", JSON.stringify(deposits));
 
-    // ✅ Sync currentUser idan shine logged in
     let current = JSON.parse(localStorage.getItem("currentUser"));
     if (current && current.email === dep.email) {
       localStorage.setItem("currentUser", JSON.stringify(users[idx]));
@@ -247,7 +278,6 @@ function approveWithdraw(index) {
     history.push({ ...wd, status: "Approved" });
     localStorage.setItem("withdrawHistory", JSON.stringify(history));
 
-    // ✅ Sync currentUser idan shine logged in
     let current = JSON.parse(localStorage.getItem("currentUser"));
     if (current && current.email === wd.email) {
       localStorage.setItem("currentUser", JSON.stringify(users[idx]));
@@ -259,7 +289,7 @@ function approveWithdraw(index) {
   loadPendingWithdraws();
 }
 
-// 🎄 Add Christmas Snowflakes + Lights
+// 🎄 Christmas Decorations
 window.addEventListener("DOMContentLoaded", () => {
   const snowContainer = document.createElement("div");
   snowContainer.classList.add("snow");
