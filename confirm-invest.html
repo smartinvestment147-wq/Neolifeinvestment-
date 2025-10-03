@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Investment - Neolife Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Confirm Investment</h2>
+    <p id="confirmText"></p>
+
+    <button id="confirmBtn">Confirm Investment</button>
+    <button onclick="window.location.href='invest.html'">Cancel</button>
+  </div>
+
+  <script>
+    // Extract query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = urlParams.get("amount");
+    const plan = urlParams.get("plan");
+
+    document.getElementById("confirmText").innerText =
+      `You are about to invest ₦${amount} in "${plan}".`;
+
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      confirmInvest(amount, plan);
+    });
+  </script>
+
+</body>
+</html>
