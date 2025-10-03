@@ -34,3 +34,135 @@ input, select{width:100%;padding:10px;margin-top:6px;border:1px solid #e6eef6;bo
   .inline-form{grid-template-columns:1fr;grid-auto-rows:auto}
   .balance-box{flex-direction:column;align-items:flex-start}
 }
+:root {
+  --bg: #f4f7fb;
+  --card: #fff;
+  --accent: #0b8457;
+  --muted: #6b7280;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  background: var(--bg);
+  margin: 0;
+  color: #111;
+  padding: 20px;
+}
+
+.card {
+  max-width: 920px;
+  margin: 20px auto;
+  background: var(--card);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(20, 20, 30, 0.06);
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+h2 {
+  margin: 6px 0;
+}
+
+h3 {
+  margin: 18px 0 8px;
+}
+
+label {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #e6eef6;
+  border-radius: 8px;
+}
+
+.btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.link-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  cursor: pointer;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.inline-form {
+  display: grid;
+  grid-template-columns: 1fr 180px 140px;
+  gap: 8px;
+  align-items: center;
+}
+
+.referral-row {
+  display: flex;
+  gap: 8px;
+}
+
+.referral-row input {
+  flex: 1;
+}
+
+.history {
+  background: #fbfcfe;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #eef4fb;
+  min-height: 40px;
+}
+
+.balance-box {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .inline-form {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .balance-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
