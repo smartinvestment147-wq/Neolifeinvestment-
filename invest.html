@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invest Funds - Neolife Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body onload="loadDashboard()">
+
+  <div class="container">
+    <h2>Invest Funds</h2>
+    <p id="welcomeUser"></p>
+    <p>Available Balance: ₦<span id="userBalance">0</span></p>
+    <p>Already Invested: ₦<span id="userInvested">0</span></p>
+
+    <form onsubmit="investFunds(event)">
+      <label for="investAmount">Amount to Invest:</label>
+      <input type="number" id="investAmount" required min="1">
+
+      <label for="investPlan">Choose Plan:</label>
+      <select id="investPlan" required>
+        <option value="Starter Plan">Starter Plan - 10% Weekly</option>
+        <option value="Standard Plan">Standard Plan - 20% Monthly</option>
+        <option value="Premium Plan">Premium Plan - 50% 3 Months</option>
+      </select>
+
+      <button type="submit">Proceed to Confirm</button>
+    </form>
+
+    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+  </div>
+
+</body>
+</html>
+
+
+---
+
+📄 confirm-invest.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Investment - Smart Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Confirm Investment</h2>
+    <p id="confirmText"></p>
+
+    <button id="confirmBtn">Confirm Investment</button>
+    <button onclick="window.location.href='invest.html'">Cancel</button>
+  </div>
+
+  <script>
+    // Extract query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = urlParams.get("amount");
+    const plan = urlParams.get("plan");
+
+    document.getElementById("confirmText").innerText =
+      `You are about to invest ₦${amount} in "${plan}".`;
+
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      confirmInvest(amount, plan);
+    });
+  </script>
+
+</body>
+</html>
