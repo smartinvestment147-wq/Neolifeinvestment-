@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Deposit - Neolife Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="card">
+    <h2>Confirm Your Deposit</h2>
+    <p>You are about to deposit:</p>
+
+    <h3>₦<span id="confirmAmount">0</span></h3>
+    <p>Plan: <strong id="confirmPlan"></strong></p>
+
+    <div class="btn-row">
+      <button class="btn" id="confirmBtn">Confirm</button>
+      <button class="btn outline" onclick="window.location.href='deposit.html'">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Karɓi query params daga URL (amount da plan)
+    const params = new URLSearchParams(window.location.search);
+    const amount = params.get("amount");
+    const plan = params.get("plan");
+
+    // saka a page
+    document.getElementById("confirmAmount").textContent = amount || "0";
+    document.getElementById("confirmPlan").textContent = plan || "";
+
+    // confirm button
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      depositFundsDirect(amount, plan); // daga main.js
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
