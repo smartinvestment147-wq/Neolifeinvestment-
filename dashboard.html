@@ -6,140 +6,139 @@
   <title>User Dashboard</title>
   <style>
     :root {
-      --bg: #f4f7fb;
-      --card: #fff;
-      --accent: #0b8457;
-      --muted: #6b7280;
+      --bg:#f4f7fb;
+      --card:#fff;
+      --accent:#0b8457;
+      --muted:#6b7280;
     }
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+    body{
+      font-family:Inter, system-ui, Arial, sans-serif;
+      background:var(--bg);
+      margin:0;
+      color:#111;
+      padding:20px;
     }
-    body {
-      font-family: Inter, system-ui, Arial, sans-serif;
-      background: var(--bg);
-      margin: 0;
-      color: #111;
-      padding: 20px;
+    .card{
+      max-width:920px;
+      margin:20px auto;
+      background:var(--card);
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 6px 18px rgba(20,20,30,0.06);
     }
-    .card {
-      max-width: 920px;
-      margin: 20px auto;
-      background: var(--card);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(20, 20, 30, 0.06);
+    h1{margin:0 0 10px;font-size:22px}
+    h2{margin:6px 0}
+    h3{margin:18px 0 8px}
+    label{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+    input, select{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border:1px solid #e6eef6;
+      border-radius:8px;
     }
-    h1 { margin: 0 0 10px; font-size: 22px }
-    h2 { margin: 6px 0 }
-    h3 { margin: 18px 0 8px }
-    label { display: block; margin-top: 8px; font-size: 13px; color: var(--muted) }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #e6eef6;
-      border-radius: 8px;
+    .btn{
+      background:var(--accent);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
     }
-    .btn {
-      background: var(--accent);
-      color: #fff;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
+    .btn.outline{
+      background:transparent;
+      color:var(--accent);
+      border:1px solid var(--accent);
     }
-    .btn.outline {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--accent);
+    .link-btn{
+      background:transparent;
+      color:var(--accent);
+      border:0;
+      cursor:pointer;
     }
-    .link-btn {
-      background: transparent;
-      color: var(--accent);
-      border: 0;
-      cursor: pointer;
+    .muted{color:var(--muted);font-size:14px;margin-top:10px}
+    .inline-form{
+      display:grid;
+      grid-template-columns:1fr 180px 140px;
+      gap:8px;
+      align-items:center;
     }
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 10px;
+    .referral-row{display:flex;gap:8px}
+    .referral-row input{flex:1}
+    .history{
+      background:#fbfcfe;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #eef4fb;
+      min-height:40px;
     }
-    .inline-form {
-      display: grid;
-      grid-template-columns: 1fr 180px 140px;
-      gap: 8px;
-      align-items: center;
+    .balance-box{
+      display:flex;
+      gap:30px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
     }
-    .referral-row {
-      display: flex;
-      gap: 8px;
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:15px;
     }
-    .referral-row input {
-      flex: 1;
-    }
-    .history {
-      background: #fbfcfe;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #eef4fb;
-      min-height: 40px;
-    }
-    .balance-box {
-      display: flex;
-      gap: 30px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    @media (max-width: 720px) {
-      .inline-form {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
-      }
-      .balance-box {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    @media(max-width:720px){
+      .inline-form{grid-template-columns:1fr;grid-auto-rows:auto}
+      .balance-box{flex-direction:column;align-items:flex-start}
     }
   </style>
 </head>
-<body>
+<body onload="loadDashboard()">
+
   <div class="card">
     <div class="top-row">
       <h1>Welcome, <span id="username">User</span></h1>
-      <button class="link-btn" onclick="logout()">Logout</button>
+      <button class="link-btn" onclick="logoutUser()">Logout</button>
     </div>
-    
-    <div class="balance-box">
-      <h2>Balance: ₦<span id="balance">0</span></h2>
-      <button class="btn" onclick="deposit()">Deposit</button>
+
+    <div class="card">
+      <h2>Account Summary</h2>
+      <div class="balance-box">
+        <p><strong>Balance:</strong> ₦<span id="userBalance">0</span></p>
+        <p><strong>Invested:</strong> ₦<span id="userInvested">0</span></p>
+      </div>
     </div>
-    
-    <h3>Make Investment</h3>
-    <form class="inline-form" onsubmit="makeInvestment(event)">
-      <input type="number" id="amount" placeholder="Enter amount">
-      <select id="plan">
-        <option value="silver">Silver (10%)</option>
-        <option value="gold">Gold (20%)</option>
-        <option value="platinum">Platinum (30%)</option>
-      </select>
-      <button type="submit" class="btn">Invest</button>
-    </form>
-    
-    <h3>Referral Link</h3>
-    <div class="referral-row">
-      <input type="text" id="refLink" readonly>
-      <button class="btn outline" onclick="copyReferral()">Copy</button>
+
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <button class="btn" onclick="window.location.href='deposit.html'">Deposit</button>
+      <button class="btn" onclick="window.location.href='invest.html'">Invest</button>
+      <button class="btn" onclick="window.location.href='withdraw.html'">Withdraw</button>
     </div>
-    
-    <h3>Investment History</h3>
-    <div class="history" id="history">No investments yet</div>
+
+    <div class="card">
+      <h2>Referral Program</h2>
+      <div class="referral-row">
+        <input type="text" id="referralLink" readonly>
+        <button class="btn outline" onclick="generateReferral()">Generate</button>
+        <button class="btn" onclick="copyReferral()">Copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Investment History</h2>
+      <div id="investList" class="history">
+        <p>No investments yet.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Withdrawal History</h2>
+      <div id="withdrawHistoryContainer" class="history">
+        <p>No withdrawals yet.</p>
+      </div>
+    </div>
   </div>
-  
+
   <script src="main.js"></script>
 </body>
 </html>
