@@ -1,53 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="main.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - neolife Investment</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="main.js" defer></script>
 </head>
 <body onload="loadDashboard()">
-
-  <div class="container">
-    <h1>Dashboard</h1>
-    <p id="welcomeUser"></p>
-
-    <div class="card">
-      <h2>Account Summary</h2>
-      <p><strong>Balance:</strong> ₦<span id="userBalance">0</span></p>
-      <p><strong>Invested:</strong> ₦<span id="userInvested">0</span></p>
+  <div class="card">
+    <div class="top-row">
+      <h1 id="welcomeUser">Welcome</h1>
+      <button class="link-btn" onclick="logoutUser()">Logout</button>
     </div>
 
-    <div class="card">
-      <h2>Quick Actions</h2>
-      <button onclick="window.location.href='deposit.html'">Deposit</button>
-      <button onclick="window.location.href='invest.html'">Invest</button>
-      <button onclick="window.location.href='withdraw.html'">Withdraw</button>
-      <button onclick="logoutUser()">Logout</button>
-    </div>
-
-    <div class="card">
-      <h2>Referral Program</h2>
-      <input type="text" id="referralLink" readonly>
-      <button onclick="generateReferral()">Generate Link</button>
-      <button onclick="copyReferral()">Copy Link</button>
-    </div>
-
-    <div class="card">
-      <h2>Investment History</h2>
-      <div id="investList">
-        <p>No investments yet.</p>
+    <div class="balance-box">
+      <div>
+        <small>Balance</small>
+        <h2>₦<span id="userBalance">0</span></h2>
+      </div>
+      <div>
+        <small>Total Invested</small>
+        <h3>₦<span id="userInvested">0</span></h3>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Withdrawal History</h2>
-      <div id="withdrawHistoryContainer">
-        <p>No withdrawals yet.</p>
-      </div>
+    <hr/>
+
+    <h3>Deposit / Invest</h3>
+    <form onsubmit="depositFunds(event)" class="inline-form">
+      <input type="number" id="depositAmount" placeholder="Amount (₦)" required min="1" />
+      <select id="depositPlan">
+        <option value="Plan A" selected>Plan A - 30% (30 days)</option>
+        <option value="Plan B">Plan B - 30% (45 days)</option>
+        <option value="Plan C">Plan C - 50% (90 days)</option>
+      </select>
+      <button type="submit" class="btn">Deposit</button>
+    </form>
+   
+    <h3>Withdraw</h3>
+    <form onsubmit="withdrawFunds(event)" class="inline-form">
+      <input type="number" id="withdrawAmount" placeholder="Amount (₦)" required min="1" />
+      <button type="submit" class="btn outline">Request Withdraw</button>
+    </form>
+
+    <h3>Referral</h3>
+    <div class="referral-row">
+      <input type="text" id="referralLink" readonly />
+      <button class="btn outline" onclick="generateReferral()">Generate</button>
+      <button class="btn" onclick="copyReferral()">Copy</button>
     </div>
+
+    <h3>Withdraw History</h3>
+    <div id="withdrawHistoryContainer" class="history"></div>
+
+    <h3>Investments</h3>
+    <div id="investList" class="history"></div>
   </div>
-
 </body>
 </html>
+
+  <footer class="footer">
+    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+  </html>
