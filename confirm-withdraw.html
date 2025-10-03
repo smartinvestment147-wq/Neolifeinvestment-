@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Withdraw - neolife Investment</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="card">
+    <h2>Confirm Your Withdrawal</h2>
+    <p>You are about to withdraw:</p>
+
+    <h3>₦<span id="confirmWithdrawAmount">0</span></h3>
+
+    <div class="btn-row">
+      <button class="btn" id="confirmWithdrawBtn">Confirm</button>
+      <button class="btn outline" onclick="window.location.href='withdraw.html'">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Karɓi query params daga URL
+    const params = new URLSearchParams(window.location.search);
+    const amount = params.get("amount");
+
+    // saka a page
+    document.getElementById("confirmWithdrawAmount").textContent = amount || "0";
+
+    // confirm button
+    document.getElementById("confirmWithdrawBtn").addEventListener("click", () => {
+      withdrawFundsDirect(amount); // daga main.js
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
