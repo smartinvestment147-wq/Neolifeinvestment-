@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Register - neolife Investment</title>
+  <title>Register - Smart Investment</title>
   <link rel="stylesheet" href="style.css" />
   <script src="main.js" defer></script>
 </head>
@@ -13,23 +13,18 @@
 
     <form id="registerForm" onsubmit="registerUser(event)">
       <label>Full name</label>
-      <input type="text" id="regName" placeholder="Your name" required />
+      <input type="text" id="username" placeholder="Your name" required />
 
       <label>Email</label>
-      <input type="email" id="regEmail" placeholder="you@example.com" required />
+      <input type="email" id="email" placeholder="you@example.com" required />
 
       <label>Password</label>
-      <input type="password" id="regPassword" placeholder="Password" minlength="4" required />
+      <input type="password" id="password" placeholder="Password" minlength="4" required />
 
       <button type="submit" class="btn">Create account</button>
     </form>
 
-    <p class="muted">Have account? <a href="login.html">Login here</a></p>
+    <p class="muted">Have an account? <a href="login.html">Login here</a></p>
   </div>
-
-  <footer class="footer">
-    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
-  </footer>
-
 </body>
 </html>
