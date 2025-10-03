@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Withdraw - Smart Investment</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="card">
+    <div class="top-row">
+      <h1>🏦 Withdraw Funds</h1>
+      <a href="dashboard.html" class="link-btn logout">⬅ Back</a>
+    </div>
+
+    <h3>Choose Amount</h3>
+    <div class="price-buttons">
+      <button class="btn withdraw" onclick="selectWithdrawAmount(1000)">₦1,000</button>
+      <button class="btn withdraw" onclick="selectWithdrawAmount(5000)">₦5,000</button>
+      <button class="btn withdraw" onclick="selectWithdrawAmount(10000)">₦10,000</button>
+      <button class="btn withdraw" onclick="selectWithdrawAmount(20000)">₦20,000</button>
+    </div>
+
+    <h3>Or Enter Custom Amount</h3>
+    <form onsubmit="goToWithdrawConfirm(event)" class="inline-form">
+      <input type="number" id="withdrawAmount" placeholder="Amount (₦)" required min="1" />
+      <button type="submit" class="btn withdraw">Request Withdraw</button>
+    </form>
+  </div>
+
+  <script>
+    function selectWithdrawAmount(amount) {
+      document.getElementById("withdrawAmount").value = amount;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    }
+
+    function goToWithdrawConfirm(event) {
+      event.preventDefault();
+      const amount = document.getElementById("withdrawAmount").value;
+      // tura zuwa confirm-withdraw page
+      window.location.href = `confirm-withdraw.html?amount=${amount}`;
+    }
+  </script>
+</body>
+</html>
