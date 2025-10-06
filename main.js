@@ -1,4 +1,4 @@
-// main.js - Smart Investment (Register + Login + Dashboard + Admin + Deposit/Invest Flow)
+// main.js - Smart Investment (Register + Login + Deposit + Admin Sync + Protection)
 
 // ---------------- Helper functions ----------------
 function getUsers() {
@@ -9,6 +9,14 @@ function saveUsers(users) {
 }
 function findUserByEmail(email) {
   return getUsers().find(u => u.email === email);
+}
+
+// ---------------- Restrict index.html ----------------
+if (window.location.pathname.endsWith("index.html")) {
+  const current = JSON.parse(localStorage.getItem("currentUser"));
+  if (!current) {
+    window.location.href = "register.html";
+  }
 }
 
 // ---------------- Register ----------------
@@ -33,7 +41,6 @@ function registerUser(event) {
 // ---------------- Login ----------------
 function loginUser(event) {
   event.preventDefault();
-
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
 
@@ -91,7 +98,13 @@ function depositFundsDirect(amount, plan) {
   const amt = parseFloat(amount);
   if (!amt || amt <= 0) { alert("Invalid deposit amount"); return; }
 
+  // Prevent double deposit
   let pendingDeposits = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
+  if (pendingDeposits.some(p => p.email === current.email && p.status === "Pending")) {
+    alert("You already have a pending deposit. Please wait for admin approval.");
+    return;
+  }
+
   pendingDeposits.push({
     username: users[idx].username,
     email: users[idx].email,
@@ -102,48 +115,11 @@ function depositFundsDirect(amount, plan) {
   });
   localStorage.setItem("pendingDeposits", JSON.stringify(pendingDeposits));
 
-  alert("Deposit submitted and awaiting admin approval.");
-  window.location.href = "dashboard.html";
-}
-
-// ---------------- Investment ----------------
-function investFunds(event) {
-  event.preventDefault();
-  const amount = document.getElementById("investAmount").value;
-  const plan = document.getElementById("investPlan").value;
-  window.location.href = `confirm-invest.html?amount=${amount}&plan=${encodeURIComponent(plan)}`;
-}
-
-function confirmInvest(amount, plan) {
-  const current = JSON.parse(localStorage.getItem("currentUser"));
-  if (!current) { window.location.href = "login.html"; return; }
-
-  let users = getUsers();
-  const idx = users.findIndex(u => u.email === current.email);
-  if (idx === -1) return;
-
-  const amt = parseFloat(amount);
-  if (!amt || amt <= 0) { alert("Invalid amount"); return; }
-  if (users[idx].balance < amt) { alert("Insufficient balance"); return; }
-
-  users[idx].balance -= amt;
-  users[idx].invested += amt;
-  saveUsers(users);
-
-  let invests = JSON.parse(localStorage.getItem("investments") || "[]");
-  invests.push({
-    username: users[idx].username,
-    email: users[idx].email,
-    amount: amt,
-    plan,
-    date: new Date().toLocaleString(),
-    status: "Active"
-  });
-  localStorage.setItem("investments", JSON.stringify(invests));
-
-  localStorage.setItem("currentUser", JSON.stringify(users[idx]));
-  alert("Investment successful!");
-  window.location.href = "dashboard.html";
+  // Message + Redirect after 10 seconds
+  alert("Deposit submitted successfully! Redirecting to admin page in 10 seconds...");
+  setTimeout(() => {
+    window.location.href = "admin.html";
+  }, 10000);
 }
 
 // ---------------- Withdraw ----------------
@@ -233,17 +209,13 @@ function approveDeposit(index) {
   let users = getUsers();
   const idx = users.findIndex(u => u.email === dep.email);
   if (idx !== -1) {
-    users[idx].balance += dep.amount; // ✅ Deposit → Balance kawai
+    users[idx].balance += dep.amount;
+    users[idx].invested += dep.amount;
     saveUsers(users);
 
-    let deposits = JSON.parse(localStorage.getItem("depositHistory") || "[]");
-    deposits.push({ ...dep, status: "Approved" });
-    localStorage.setItem("depositHistory", JSON.stringify(deposits));
-
-    let current = JSON.parse(localStorage.getItem("currentUser"));
-    if (current && current.email === dep.email) {
-      localStorage.setItem("currentUser", JSON.stringify(users[idx]));
-    }
+    let invests = JSON.parse(localStorage.getItem("investments") || "[]");
+    invests.push({ ...dep, status: "Approved" });
+    localStorage.setItem("investments", JSON.stringify(invests));
   }
 
   pending.splice(index, 1);
@@ -277,11 +249,6 @@ function approveWithdraw(index) {
     let history = JSON.parse(localStorage.getItem("withdrawHistory") || "[]");
     history.push({ ...wd, status: "Approved" });
     localStorage.setItem("withdrawHistory", JSON.stringify(history));
-
-    let current = JSON.parse(localStorage.getItem("currentUser"));
-    if (current && current.email === wd.email) {
-      localStorage.setItem("currentUser", JSON.stringify(users[idx]));
-    }
   }
 
   pending.splice(index, 1);
@@ -289,34 +256,14 @@ function approveWithdraw(index) {
   loadPendingWithdraws();
 }
 
-// 🎄 Christmas Decorations
+// 🎄 Decoration (Optional)
 window.addEventListener("DOMContentLoaded", () => {
-  const snowContainer = document.createElement("div");
-  snowContainer.classList.add("snow");
-  document.body.appendChild(snowContainer);
-
-  for (let i = 0; i < 40; i++) {
-    let snowflake = document.createElement("div");
-    snowflake.classList.add("snowflake");
-    snowflake.textContent = "❄";
-    snowflake.style.left = Math.random() * 100 + "vw";
-    snowflake.style.animationDuration = (Math.random() * 3 + 2) + "s";
-    snowflake.style.fontSize = (Math.random() * 20 + 10) + "px";
-    snowContainer.appendChild(snowflake);
-  }
-
-  const lights = document.createElement("div");
-  lights.classList.add("lights");
-  lights.innerHTML = `
-    <div class="light"></div>
-    <div class="light"></div>
-    <div class="light"></div>
-    <div class="light"></div>
-  `;
-  document.body.appendChild(lights);
-
-  const tree = document.createElement("div");
-  tree.classList.add("tree");
-  tree.textContent = "🌲";
-  document.body.appendChild(tree);
+  const snow = document.createElement("div");
+  snow.style.position = "fixed";
+  snow.style.top = "0";
+  snow.style.left = "0";
+  snow.style.width = "100%";
+  snow.style.height = "100%";
+  snow.style.pointerEvents = "none";
+  document.body.appendChild(snow);
 });
