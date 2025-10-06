@@ -1,34 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="main.js" defer></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Dashboard - Smart Investment</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="main.js" defer></script>
 </head>
-<body>
-  <div class="card">
-    <h1>Admin Panel</h1>
+<body style="margin:0;font-family:Arial, sans-serif;background:#06121a;color:#fff;">
 
-    <h2>Pending Deposits</h2>
-    <div id="pendingDepositsContainer">
-      <!-- deposits will load here -->
-    </div>
-
-    <h2>Pending Withdrawals</h2>
-    <div id="pendingWithdrawsContainer">
-      <!-- withdrawals will load here -->
-    </div>
-
-    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+  <div style="padding:18px;text-align:center;background:linear-gradient(90deg,#0b8a3c,#006b2f);">
+    <h2 style="margin:0;">Admin Dashboard</h2>
+    <p style="margin:6px 0 0;opacity:0.9;">Overview & quick actions</p>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      loadPendingDeposits();
-      loadPendingWithdraws();
-    });
-  </script>
+  <div style="max-width:1000px;margin:18px auto;padding:12px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;">
+      <div style="background:#0f2b22;padding:14px;border-radius:8px;flex:1;min-width:180px;">
+        <h4 style="margin:0;color:#00ff99;">Total Users</h4>
+        <p id="adminTotalUsers" style="font-size:20px;margin:6px 0 0;">0</p>
+      </div>
+
+      <div style="background:#0f2b22;padding:14px;border-radius:8px;flex:1;min-width:180px;">
+        <h4 style="margin:0;color:#00ff99;">Pending Deposits</h4>
+        <p id="adminPendingCount" style="font-size:20px;margin:6px 0 0;">0</p>
+      </div>
+
+      <div style="background:#0f2b22;padding:14px;border-radius:8px;flex:1;min-width:180px;">
+        <h4 style="margin:0;color:#00ff99;">Total Pending (₦)</h4>
+        <p id="adminTotalDeposits" style="font-size:20px;margin:6px 0 0;">0.00</p>
+      </div>
+    </div>
+
+    <div style="background:#071c14;padding:12px;border-radius:10px;margin-top:14px;">
+      <h3 style="color:#00ff99;margin:0 0 8px;">Recent deposits</h3>
+      <canvas id="adminChart" height="120"></canvas>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:14px; flex-wrap:wrap;">
+      <a href="admin-deposits.html" style="text-decoration:none;">
+        <div style="background:#0b8a3c;padding:12px;border-radius:10px;color:#fff;">Manage Deposits</div>
+      </a>
+      <a href="admin-users.html" style="text-decoration:none;">
+        <div style="background:#0b8a3c;padding:12px;border-radius:10px;color:#fff;">View Users</div>
+      </a>
+      <a href="login.html" style="text-decoration:none;">
+        <div style="background:#ff4444;padding:12px;border-radius:10px;color:#fff;">Logout</div>
+      </a>
+    </div>
+  </div>
+
 </body>
 </html>
