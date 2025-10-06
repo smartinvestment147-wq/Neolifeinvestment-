@@ -1,4 +1,4 @@
-// main.js - Smart Investment (Register + Login + Deposit + Admin Sync + Protection)
+// main.js - Smart Investment (2025 Updated Edition)
 
 // ---------------- Helper functions ----------------
 function getUsers() {
@@ -11,13 +11,16 @@ function findUserByEmail(email) {
   return getUsers().find(u => u.email === email);
 }
 
-// ---------------- Restrict index.html ----------------
-if (window.location.pathname.endsWith("index.html")) {
+// ---------------- Redirect Guards ----------------
+window.addEventListener("DOMContentLoaded", () => {
   const current = JSON.parse(localStorage.getItem("currentUser"));
-  if (!current) {
+  const path = window.location.pathname;
+
+  // idan user bai yi login ba, baya ganin index.html
+  if (!current && path.endsWith("index.html")) {
     window.location.href = "register.html";
   }
-}
+});
 
 // ---------------- Register ----------------
 function registerUser(event) {
@@ -28,11 +31,11 @@ function registerUser(event) {
 
   let users = getUsers();
   if (users.some(u => u.email === email)) {
-    alert("Email already registered");
+    alert("Email already registered!");
     return;
   }
 
-  users.push({ username, email, password, balance: 0, invested: 0 });
+  users.push({ username, email, password, balance: 0, invested: 0, canInvest: false });
   saveUsers(users);
   alert("Registration successful! Please login.");
   window.location.href = "login.html";
@@ -41,6 +44,7 @@ function registerUser(event) {
 // ---------------- Login ----------------
 function loginUser(event) {
   event.preventDefault();
+
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
 
@@ -72,11 +76,27 @@ function loadDashboard() {
   }
 
   document.getElementById("welcomeUser").innerText = "Welcome, " + user.username;
-  document.getElementById("userBalance").innerText = user.balance;
-  document.getElementById("userInvested").innerText = user.invested;
+  document.getElementById("userBalance").innerText = user.balance.toFixed(2);
+  document.getElementById("userInvested").innerText = user.invested.toFixed(2);
 
-  loadWithdrawHistory(user.email);
-  loadInvestments(user.email);
+  // disable invest button if deposit not approved
+  if (!user.canInvest) {
+    const investBtn = document.getElementById("investBtn");
+    if (investBtn) {
+      investBtn.disabled = true;
+      investBtn.style.opacity = "0.6";
+      investBtn.title = "You can invest after admin approval.";
+    }
+  }
+
+  // refresh dashboard every 5 seconds
+  setInterval(() => {
+    const freshUser = findUserByEmail(user.email);
+    if (freshUser) {
+      document.getElementById("userBalance").innerText = freshUser.balance.toFixed(2);
+      document.getElementById("userInvested").innerText = freshUser.invested.toFixed(2);
+    }
+  }, 5000);
 }
 
 // ---------------- Deposit ----------------
@@ -84,6 +104,7 @@ function depositFunds(event) {
   event.preventDefault();
   const amount = document.getElementById("depositAmount").value;
   const plan = document.getElementById("depositPlan").value;
+
   window.location.href = `confirm-deposit.html?amount=${amount}&plan=${encodeURIComponent(plan)}`;
 }
 
@@ -93,19 +114,13 @@ function depositFundsDirect(amount, plan) {
 
   const users = getUsers();
   const idx = users.findIndex(u => u.email === current.email);
-  if (idx === -1) { alert("User not found"); return; }
+  if (idx === -1) return;
 
   const amt = parseFloat(amount);
-  if (!amt || amt <= 0) { alert("Invalid deposit amount"); return; }
+  if (amt <= 0) { alert("Invalid deposit amount!"); return; }
 
-  // Prevent double deposit
-  let pendingDeposits = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
-  if (pendingDeposits.some(p => p.email === current.email && p.status === "Pending")) {
-    alert("You already have a pending deposit. Please wait for admin approval.");
-    return;
-  }
-
-  pendingDeposits.push({
+  let pending = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
+  pending.push({
     username: users[idx].username,
     email: users[idx].email,
     amount: amt,
@@ -113,46 +128,52 @@ function depositFundsDirect(amount, plan) {
     date: new Date().toLocaleString(),
     status: "Pending"
   });
-  localStorage.setItem("pendingDeposits", JSON.stringify(pendingDeposits));
+  localStorage.setItem("pendingDeposits", JSON.stringify(pending));
 
-  // Message + Redirect after 10 seconds
-  alert("Deposit submitted successfully! Redirecting to admin page in 10 seconds...");
-  setTimeout(() => {
-    window.location.href = "admin.html";
-  }, 10000);
+  alert("Deposit submitted! Await admin approval.");
+  window.location.href = "admin.html";
 }
 
-// ---------------- Withdraw ----------------
-function withdrawFunds(event) {
-  event.preventDefault();
-  const amount = document.getElementById("withdrawAmount").value;
-  window.location.href = `confirm-withdraw.html?amount=${amount}`;
+// ---------------- Admin Panel ----------------
+function loadPendingDeposits() {
+  const container = document.getElementById("pendingDepositsContainer");
+  const pending = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
+  if (!container) return;
+
+  if (pending.length === 0) {
+    container.innerHTML = "<p>No pending deposits</p>";
+    return;
+  }
+
+  container.innerHTML = pending.map((p, i) =>
+    `<div>
+      ${p.username} - ₦${p.amount} (${p.plan}) 
+      <button onclick="approveDeposit(${i})">Approve</button>
+    </div>`
+  ).join("");
 }
 
-function withdrawFundsDirect(amount) {
-  const current = JSON.parse(localStorage.getItem("currentUser"));
-  if (!current) { window.location.href = "login.html"; return; }
+function approveDeposit(index) {
+  let pending = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
+  if (!pending[index]) return;
+  const dep = pending[index];
 
-  const users = getUsers();
-  const idx = users.findIndex(u => u.email === current.email);
-  if (idx === -1) { alert("User not found"); return; }
+  let users = getUsers();
+  const idx = users.findIndex(u => u.email === dep.email);
+  if (idx !== -1) {
+    users[idx].balance += dep.amount;
+    users[idx].canInvest = true;
+    saveUsers(users);
 
-  const amt = parseFloat(amount);
-  if (!amt || amt <= 0) { alert("Invalid withdraw amount"); return; }
-  if (users[idx].balance < amt) { alert("Insufficient balance"); return; }
+    let invests = JSON.parse(localStorage.getItem("investments") || "[]");
+    invests.push({ ...dep, status: "Approved" });
+    localStorage.setItem("investments", JSON.stringify(invests));
+  }
 
-  let pendingWithdraws = JSON.parse(localStorage.getItem("pendingWithdraws") || "[]");
-  pendingWithdraws.push({
-    username: users[idx].username,
-    email: users[idx].email,
-    amount: amt,
-    date: new Date().toLocaleString(),
-    status: "Pending"
-  });
-  localStorage.setItem("pendingWithdraws", JSON.stringify(pendingWithdraws));
-
-  alert("Withdrawal request submitted and awaiting admin approval.");
-  window.location.href = "dashboard.html";
+  pending.splice(index, 1);
+  localStorage.setItem("pendingDeposits", JSON.stringify(pending));
+  loadPendingDeposits();
+  alert("Deposit approved!");
 }
 
 // ---------------- Referral ----------------
@@ -168,102 +189,3 @@ function copyReferral() {
   document.execCommand("copy");
   alert("Referral link copied!");
 }
-
-// ---------------- Histories ----------------
-function loadWithdrawHistory(email) {
-  const history = JSON.parse(localStorage.getItem("withdrawHistory") || "[]");
-  const list = history.filter(h => h.email === email);
-  const container = document.getElementById("withdrawHistoryContainer");
-  if (container) {
-    container.innerHTML = list.map(h => `<p>${h.amount} - ${h.status} (${h.date})</p>`).join("");
-  }
-}
-
-function loadInvestments(email) {
-  const invests = JSON.parse(localStorage.getItem("investments") || "[]");
-  const list = invests.filter(i => i.email === email);
-  const container = document.getElementById("investList");
-  if (container) {
-    container.innerHTML = list.map(i => `<p>${i.amount} - ${i.plan} (${i.status})</p>`).join("");
-  }
-}
-
-// ---------------- Admin Panel ----------------
-function loadPendingDeposits() {
-  const container = document.getElementById("pendingDepositsContainer");
-  const pending = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
-  if (container) {
-    container.innerHTML = pending.map((p, idx) =>
-      `<div>
-        ${p.username} - ₦${p.amount} (${p.plan}) - ${p.status}
-        <button onclick="approveDeposit(${idx})">Approve</button>
-      </div>`).join("");
-  }
-}
-
-function approveDeposit(index) {
-  let pending = JSON.parse(localStorage.getItem("pendingDeposits") || "[]");
-  if (!pending[index]) return;
-  const dep = pending[index];
-
-  let users = getUsers();
-  const idx = users.findIndex(u => u.email === dep.email);
-  if (idx !== -1) {
-    users[idx].balance += dep.amount;
-    users[idx].invested += dep.amount;
-    saveUsers(users);
-
-    let invests = JSON.parse(localStorage.getItem("investments") || "[]");
-    invests.push({ ...dep, status: "Approved" });
-    localStorage.setItem("investments", JSON.stringify(invests));
-  }
-
-  pending.splice(index, 1);
-  localStorage.setItem("pendingDeposits", JSON.stringify(pending));
-  loadPendingDeposits();
-}
-
-function loadPendingWithdraws() {
-  const container = document.getElementById("pendingWithdrawsContainer");
-  const pending = JSON.parse(localStorage.getItem("pendingWithdraws") || "[]");
-  if (container) {
-    container.innerHTML = pending.map((w, idx) =>
-      `<div>
-        ${w.username} - ₦${w.amount} - ${w.status}
-        <button onclick="approveWithdraw(${idx})">Approve</button>
-      </div>`).join("");
-  }
-}
-
-function approveWithdraw(index) {
-  let pending = JSON.parse(localStorage.getItem("pendingWithdraws") || "[]");
-  if (!pending[index]) return;
-  const wd = pending[index];
-
-  let users = getUsers();
-  const idx = users.findIndex(u => u.email === wd.email);
-  if (idx !== -1 && users[idx].balance >= wd.amount) {
-    users[idx].balance -= wd.amount;
-    saveUsers(users);
-
-    let history = JSON.parse(localStorage.getItem("withdrawHistory") || "[]");
-    history.push({ ...wd, status: "Approved" });
-    localStorage.setItem("withdrawHistory", JSON.stringify(history));
-  }
-
-  pending.splice(index, 1);
-  localStorage.setItem("pendingWithdraws", JSON.stringify(pending));
-  loadPendingWithdraws();
-}
-
-// 🎄 Decoration (Optional)
-window.addEventListener("DOMContentLoaded", () => {
-  const snow = document.createElement("div");
-  snow.style.position = "fixed";
-  snow.style.top = "0";
-  snow.style.left = "0";
-  snow.style.width = "100%";
-  snow.style.height = "100%";
-  snow.style.pointerEvents = "none";
-  document.body.appendChild(snow);
-});
