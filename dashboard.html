@@ -1,108 +1,157 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Smart Investment</title>
-  <style>
-    :root{
-      --bg:#f4f7fb;
-      --card:#fff;
-      --accent:#0b8457;
-      --muted:#6b7280
-    }
-    *{box-sizing:border-box}
-    body{
-      font-family:Inter, system-ui, Arial, sans-serif;
-      background:var(--bg);
-      margin:0;
-      color:#111;
-      padding:20px;
-    }
-    .container{max-width:920px;margin:0 auto}
-    .card{
-      background:var(--card);
-      padding:20px;
-      border-radius:10px;
-      box-shadow:0 6px 18px rgba(20,20,30,0.06);
-      margin:20px 0;
-    }
-    h1{margin:0 0 10px;font-size:22px}
-    h2{margin:6px 0}
-    p{margin:6px 0}
-    .btn{
-      background:var(--accent);
-      color:#fff;
-      padding:10px 14px;
-      border-radius:8px;
-      border:none;
-      cursor:pointer;
-      margin:5px 5px 0 0;
-    }
-    .referral-row{display:flex;gap:8px;margin-top:10px}
-    .referral-row input{
-      flex:1;
-      padding:10px;
-      border:1px solid #e6eef6;
-      border-radius:8px;
-    }
-    .history{
-      background:#fbfcfe;
-      padding:10px;
-      border-radius:8px;
-      border:1px solid #eef4fb;
-      min-height:40px;
-    }
-    @media(max-width:720px){
-      .referral-row{flex-direction:column}
-      .btn{width:100%}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Smart Investment</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="main.js" defer></script>
 </head>
-<body onload="loadDashboard()">
+<body style="margin:0; font-family:Poppins, Arial, sans-serif; background:#f6f9f6;">
 
-  <div class="container">
-    <h1>Dashboard</h1>
-    <p id="welcomeUser">Welcome, User</p>
+<!-- Header -->
+<div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  <h2 style="margin:0; font-size:22px;">Smart Investment</h2>
+  <p style="margin:5px 0 0; opacity:0.9;">Welcome back 👋</p>
+</div>
 
-    <div class="card">
-      <h2>Account Summary</h2>
-      <p><strong>Balance:</strong> ₦<span id="userBalance">0</span></p>
-      <p><strong>Invested:</strong> ₦<span id="userInvested">0</span></p>
-    </div>
+<!-- User Info -->
+<div style="background:#0b8a3c; color:white; padding:20px; text-align:left;">
+  <h1 id="userName" style="margin:0; font-size:32px;">User</h1>
+  <p style="margin:5px 0; font-size:15px;">ID: <span id="userId">--</span></p>
+  <p style="margin:5px 0; font-size:15px;" id="userEmail">Loading...</p>
+</div>
 
-    <div class="card">
-      <h2>Quick Actions</h2>
-      <button class="btn" onclick="window.location.href='deposit.html'">Deposit</button>
-      <button class="btn" onclick="window.location.href='invest.html'">Invest</button>
-      <button class="btn" onclick="window.location.href='withdraw.html'">Withdraw</button>
-      <button class="btn" onclick="logoutUser()">Logout</button>
-    </div>
+<!-- Balance Card -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="margin:0; font-size:17px;">Account Balance (₦)</h3>
+  <h1 id="balance" style="color:#0b8a3c; margin:10px 0; font-size:35px;">0.00</h1>
 
-    <div class="card">
-      <h2>Referral Program</h2>
-      <div class="referral-row">
-        <input type="text" id="referralLink" readonly>
-        <button class="btn" onclick="generateReferral()">Generate</button>
-        <button class="btn" onclick="copyReferral()">Copy</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Investment History</h2>
-      <div id="investList" class="history">
-        <p>No investments yet.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Withdrawal History</h2>
-      <div id="withdrawHistoryContainer" class="history">
-        <p>No withdrawals yet.</p>
-      </div>
-    </div>
+  <div style="display:flex; justify-content:space-between; margin-top:15px;">
+    <button onclick="withdraw()" style="background:#e6f4ea; color:#0b8a3c; border:none; padding:10px 15px; border-radius:10px; font-weight:bold;">Withdraw</button>
+    <img src="https://cdn-icons-png.flaticon.com/512/745/745205.png" alt="coins" style="width:60px; height:60px;">
   </div>
 
-  <script src="main.js"></script>
+  <div style="display:flex; justify-content:space-around; margin-top:15px;">
+    <div style="text-align:center;">
+      <h3 id="review" style="margin:0; color:#0b8a3c;">0.00</h3>
+      <p style="margin:0;">Pending Withdrawal</p>
+    </div>
+    <div style="text-align:center;">
+      <h3 id="success" style="margin:0; color:#0b8a3c;">0.00</h3>
+      <p style="margin:0;">Completed</p>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div style="display:flex; justify-content:space-around; margin:20px;">
+  <button onclick="deposit()" style="background:#0b8a3c; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Deposit</button>
+  <button onclick="invest()" style="background:#34c759; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Invest</button>
+  <button onclick="invite()" style="background:#1a9349; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Invite</button>
+</div>
+
+<!-- Chart Section -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="margin-bottom:10px; color:#0b8a3c;">Growth Chart</h3>
+  <canvas id="growthChart" height="180"></canvas>
+</div>
+
+<!-- Stats Table -->
+<div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <div style="display:flex; justify-content:center; gap:25px; margin-bottom:10px;">
+    <strong style="color:#0b8a3c;">Today</strong>
+    <strong>Total</strong>
+  </div>
+  <table style="width:100%; border:1px solid #0b8a3c; border-collapse:collapse; border-radius:10px;">
+    <tr style="border-bottom:1px solid #0b8a3c;">
+      <td style="padding:10px;">Referral Bonus</td><td style="text-align:right;">₦0.00</td>
+    </tr>
+    <tr style="border-bottom:1px solid #0b8a3c;">
+      <td style="padding:10px;">Team Earnings</td><td style="text-align:right;">₦0.00</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;">Investment Profit</td><td style="text-align:right;">₦0.00</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Footer Navigation -->
+<div style="position:fixed; bottom:0; left:0; width:100%; background:white; display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0;">
+  <div style="text-align:center;" onclick="window.location.href='index.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" style="width:24px;"><br><span>Home</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='plans.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/786/786407.png" style="width:24px;"><br><span>Plans</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='referral.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" style="width:24px;"><br><span>Invite</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='dashboard.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="width:24px;"><br><span>Me</span>
+  </div>
+</div>
+
+<script>
+// Load user info
+document.addEventListener('DOMContentLoaded', () => {
+  const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+  document.getElementById('userName').textContent = user.name || 'User';
+  document.getElementById('userId').textContent = user.id || 'N/A';
+  document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
+  document.getElementById('balance').textContent = user.balance ? user.balance.toFixed(2) : '0.00';
+  document.getElementById('review').textContent = user.review || '0.00';
+  document.getElementById('success').textContent = user.success || '0.00';
+
+  // Chart
+  const ctx = document.getElementById('growthChart');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [
+        {
+          label: 'Deposits',
+          data: [100, 300, 200, 400, 600, 800, 900],
+          borderColor: '#0b8a3c',
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: 'Investments',
+          data: [50, 150, 100, 250, 400, 600, 700],
+          borderColor: '#34c759',
+          tension: 0.4,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true, position: 'bottom' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+});
+
+function deposit() {
+  window.location.href = 'deposit.html';
+}
+function withdraw() {
+  window.location.href = 'withdraw.html';
+}
+function invest() {
+  window.location.href = 'plans.html';
+}
+function invite() {
+  window.location.href = 'referral.html';
+}
+</script>
+
 </body>
 </html>
