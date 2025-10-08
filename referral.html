@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral - Smart Investment</title>
+<script src="main.js" defer></script>
+</head>
+<body style="margin:0; font-family:Poppins, Arial, sans-serif; background:#f6f9f6;">
+
+<!-- Header -->
+<div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  <h2 style="margin:0; font-size:22px;">Smart Investment</h2>
+  <p style="margin:5px 0 0; opacity:0.9;">Referral Program 💰</p>
+</div>
+
+<!-- User Info -->
+<div style="background:#0b8a3c; color:white; padding:20px;">
+  <h1 id="userName" style="margin:0; font-size:28px;">User</h1>
+  <p style="margin:5px 0; font-size:15px;">Email: <span id="userEmail">Loading...</span></p>
+</div>
+
+<!-- Referral Link Card -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="color:#0b8a3c; margin:0;">Your Referral Link</h3>
+  <div id="refLink" style="background:#eaf8ed; margin-top:10px; padding:10px; border-radius:10px; word-break:break-all;"></div>
+  <button onclick="copyLink()" style="background:#0b8a3c; color:white; border:none; padding:10px 15px; margin-top:10px; border-radius:10px;">Copy Link</button>
+</div>
+
+<!-- Referrals List -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="color:#0b8a3c; margin:0;">Your Referrals</h3>
+  <ul id="refList" style="list-style:none; padding:0; margin-top:10px;"></ul>
+</div>
+
+<!-- Bonus Card -->
+<div style="background:#0b8a3c; color:white; margin:20px; padding:20px; border-radius:20px; text-align:center;">
+  <h3 style="margin:0;">Total Referral Bonus</h3>
+  <h1 id="bonus" style="margin:10px 0 0;">₦0</h1>
+</div>
+
+<!-- Footer Navigation -->
+<div style="position:fixed; bottom:0; left:0; width:100%; background:white; display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0;">
+  <div style="text-align:center;" onclick="window.location.href='index.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" style="width:24px;"><br><span>Home</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='plans.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/786/786407.png" style="width:24px;"><br><span>Plans</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='referral.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" style="width:24px;"><br><span>Invite</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='dashboard.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="width:24px;"><br><span>Me</span>
+  </div>
+</div>
+
+<script>
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users") || "[]");
+}
+
+const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+if (!currentUser) {
+  window.location.href = "login.html";
+}
+
+document.getElementById("userName").textContent = currentUser.name || "User";
+document.getElementById("userEmail").textContent = currentUser.email || "No Email";
+
+const refLink = document.getElementById("refLink");
+const refList = document.getElementById("refList");
+const bonusDisplay = document.getElementById("bonus");
+
+const users = getUsers();
+const referrals = users.filter(u => u.referredBy === currentUser.email);
+const bonus = referrals.length * 200; // ₦200 per referral
+
+refLink.textContent = window.location.origin + "/register.html?ref=" + currentUser.email;
+bonusDisplay.textContent = "₦" + bonus.toLocaleString();
+
+if (referrals.length === 0) {
+  refList.innerHTML = "<li style='color:#555;'>No referrals yet.</li>";
+} else {
+  referrals.forEach(ref => {
+    const li = document.createElement("li");
+    li.textContent = ref.name + " (" + ref.email + ")";
+    li.style.background = "#f1f3f2";
+    li.style.marginBottom = "8px";
+    li.style.padding = "8px 10px";
+    li.style.borderRadius = "10px";
+    refList.appendChild(li);
+  });
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(refLink.textContent);
+  alert("Referral link copied!");
+}
+</script>
+</body>
+</html>
