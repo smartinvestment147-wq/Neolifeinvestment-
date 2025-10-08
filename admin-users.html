@@ -1,25 +1,118 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin - Users</title>
-<script src="main.js" defer></script>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin - All Users</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #06121a;
+    color: #fff;
+  }
+  header {
+    background: linear-gradient(90deg, #0b8a3c, #006b2f);
+    text-align: center;
+    padding: 16px;
+  }
+  header h2 {
+    margin: 0;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0f2b22;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #1b3c32;
+  }
+  th {
+    background: #0b8a3c;
+    color: white;
+  }
+  tr:hover {
+    background: #09391f;
+  }
+  .back {
+    display: inline-block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #00ff99;
+  }
+  .highlight {
+    color: #00ff99;
+    font-weight: bold;
+  }
+</style>
 </head>
-<body style="margin:0;font-family:Arial, sans-serif;background:#06121a;color:#fff;">
+<body>
 
-  <div style="padding:14px;background:linear-gradient(90deg,#0b8a3c,#006b2f);text-align:center;">
-    <h2 style="margin:0;">Registered Users</h2>
-  </div>
+<header>
+  <h2>Registered Users</h2>
+  <p>Full list of Smart Investment users</p>
+</header>
 
-  <div style="max-width:980px;margin:16px auto;padding:12px;">
-    <div id="usersContainer" style="background:#071d14;border-radius:8px;padding:10px;color:#fff;">
-      <!-- JS will inject users -->
-      <p>Loading users...</p>
-    </div>
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Balance (₦)</th>
+        <th>Deposits</th>
+        <th>Join Date</th>
+      </tr>
+    </thead>
+    <tbody id="usersContainer">
+      <tr><td colspan="6">Loading users...</td></tr>
+    </tbody>
+  </table>
 
-    <div style="margin-top:12px;">
-      <a href="admin.html" style="color:#00ff99;text-decoration:none;">← Back to Admin</a>
-    </div>
-  </div>
+  <a href="admin.html" class="back">← Back to Dashboard</a>
+</div>
+
+<script>
+  function loadUsers() {
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const tbody = document.getElementById("usersContainer");
+    tbody.innerHTML = "";
+
+    if (users.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='6'>No users found</td></tr>";
+      return;
+    }
+
+    users.forEach(user => {
+      const deposits = (user.transactions || []).filter(t => t.type === "deposit").length;
+      const date = user.dateCreated || new Date().toLocaleDateString();
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${user.id || "N/A"}</td>
+        <td class="highlight">${user.username || "Unknown"}</td>
+        <td>${user.email || "N/A"}</td>
+        <td>₦${(user.balance || 0).toLocaleString()}</td>
+        <td>${deposits}</td>
+        <td>${date}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  loadUsers();
+</script>
 
 </body>
 </html>
