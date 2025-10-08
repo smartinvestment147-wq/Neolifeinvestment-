@@ -1,47 +1,215 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Invest Now - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deposit - Smart Investment</title>
+<script src="main.js" defer></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(to bottom right, #0b8a3c, #39d16e);
+    min-height: 100vh;
+  }
+
+  .container {
+    background: white;
+    border-radius: 25px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+
+  .title {
+    color: #0b8a3c;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .amount-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .amount-btn {
+    background: #f1f8f3;
+    border: 1px solid #0b8a3c;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .amount-btn:hover {
+    background: #0b8a3c;
+    color: white;
+  }
+
+  .amount-btn.active {
+    background: #0b8a3c;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  .input-group {
+    background: #f8f8f8;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #e6f7ec;
+    color: #0b8a3c;
+    font-weight: 500;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: #0b8a3c;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+
+  .btn:hover {
+    background: #08983f;
+  }
+
+  .instructions {
+    background: white;
+    margin: 20px auto;
+    max-width: 500px;
+    border-radius: 15px;
+    padding: 15px;
+    color: #444;
+    font-size: 14px;
+  }
+</style>
 </head>
+
 <body>
+  <!-- Header -->
+  <div style="padding:20px; text-align:center; color:white;">
+    <h2 style="margin:0;">Recharge</h2>
+  </div>
 
-  <header class="header">
-    <h1>💼 Make an Investment</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="plans.html">Plans</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" onclick="logout()">Logout</a>
-    </nav>
-  </header>
+  <!-- Deposit Card -->
+  <div class="container">
+    <p class="title">Minimum recharge amount: (₦4500)</p>
 
-  <main class="main">
-    <section>
-      <h2>Choose Plan & Amount</h2>
+    <div class="amount-buttons">
+      <div class="amount-btn" onclick="selectAmount(5500, event)">₦5,500</div>
+      <div class="amount-btn" onclick="selectAmount(11500, event)">₦11,500</div>
+      <div class="amount-btn" onclick="selectAmount(23000, event)">₦23,000</div>
+      <div class="amount-btn" onclick="selectAmount(35000, event)">₦35,000</div>
+      <div class="amount-btn" onclick="selectAmount(75000, event)">₦75,000</div>
+      <div class="amount-btn" onclick="selectAmount(100000, event)">₦100,000</div>
+      <div class="amount-btn" onclick="selectAmount(150000, event)">₦150,000</div>
+    </div>
 
-      <form id="investForm">
-        <label>Amount (₦):</label><br>
-        <input type="number" id="amount" required><br><br>
+    <div class="input-group">
+      <div class="label">Amount</div>
+      <div id="amountDisplay">₦ 4500</div>
+      <small>Received ₦4500 | Tax rate 0%</small>
+    </div>
 
-        <label>Select Plan:</label><br>
-        <select id="plan" required>
-          <option value="Plan A">Plan A (30 days, 30%)</option>
-          <option value="Plan B">Plan B (45 days, 30%)</option>
-          <option value="Plan C">Plan C (90 days, 50%)</option>
-        </select><br><br>
+    <div class="input-group">
+      <div class="label">Recharge channel</div>
+      <select id="channel">
+        <option>Payment_1 (₦4.5K - ₦5M)</option>
+        <option>Payment_2 (₦5K - ₦10M)</option>
+        <option>Payment_3 (₦10K - ₦20M)</option>
+      </select>
+    </div>
 
-        <button type="submit" class="btn">Invest Now</button>
-      </form>
-    </section>
-  </main>
+    <button class="btn" onclick="quickRecharge()">Quick Recharge</button>
+  </div>
 
-  <footer class="footer">
-    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
-  </footer>
+  <!-- Deposit Instructions -->
+  <div class="instructions">
+    <h4 style="color:#0b8a3c;">Deposit Instructions</h4>
+    <ol>
+      <li>The minimum deposit amount is ₦4500. Transfers below ₦4500 will not be considered.</li>
+      <li>Each time you recharge, you must resubmit the request and obtain a new platform recharge account.</li>
+      <li>Work in accordance with the recharge rules. If you fail to follow the rules and cause losses, the company is not responsible.</li>
+      <li>Once transfer is successful, funds are automatically credited. If not, contact online support.</li>
+    </ol>
+  </div>
 
-  <script src="main.js"></script>
+  <script>
+    let selectedAmount = 4500;
+
+    function selectAmount(amount, event) {
+      selectedAmount = amount;
+      document.getElementById("amountDisplay").innerText = "₦ " + amount.toLocaleString();
+      document.querySelectorAll(".amount-btn").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    async function quickRecharge() {
+      const channel = document.getElementById("channel").value;
+      const user = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+
+      if (!user.username) {
+        alert("Please log in first!");
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (selectedAmount < 4500) {
+        alert("Minimum deposit is ₦4500");
+        return;
+      }
+
+      // Generate note
+      const randomPart = Math.floor(100000 + Math.random() * 900000);
+      const timestamp = Date.now().toString().slice(-5);
+      const note = `PN${randomPart}${timestamp}`;
+
+      // Save temporary data for payment.html
+      localStorage.setItem("depositAmount", selectedAmount);
+      localStorage.setItem("depositChannel", channel);
+      localStorage.setItem("depositNote", note);
+      localStorage.setItem("depositUser", user.username);
+
+      // Add pending deposit to localStorage for admin panel
+      const deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
+      deposits.push({
+        username: user.username,
+        amount: selectedAmount,
+        channel: channel,
+        note: note,
+        status: "Pending",
+        date: new Date().toLocaleString()
+      });
+      localStorage.setItem("deposits", JSON.stringify(deposits));
+
+      // Go to payment page
+      window.location.href = "payment.html";
+    }
+  </script>
 </body>
-          </html>
+</html>
