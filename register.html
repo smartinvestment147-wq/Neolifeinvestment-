@@ -1,30 +1,124 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Register - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="main.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Smart Investment</title>
+<link rel="icon" href="logo.png">
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f5f9f7;
+  text-align: center;
+}
+.container {
+  padding: 50px 20px;
+}
+.logo {
+  width: 120px;
+  height: 120px;
+  margin-top: 60px;
+}
+h2 {
+  color: #0b8a3c;
+  font-size: 22px;
+  margin: 15px 0 40px;
+}
+input {
+  width: 85%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+button {
+  width: 90%;
+  background: #0b8a3c;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 20px;
+  cursor: pointer;
+}
+button:hover {
+  background: #097233;
+}
+.login-link {
+  display: inline-block;
+  width: 90%;
+  color: #0b8a3c;
+  border: 1.8px solid #0b8a3c;
+  border-radius: 30px;
+  padding: 13px;
+  font-size: 17px;
+  margin-top: 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+a {
+  color: #000;
+  text-decoration: none;
+}
+.version {
+  color: gray;
+  font-size: 13px;
+  margin-top: 40px;
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Register</h1>
+<div class="container">
+  <img src="logo.png" alt="Logo" class="logo">
+  <h2>Create Account</h2>
 
-    <form id="registerForm" onsubmit="registerUser(event)">
-      <label>Full name</label>
-      <input type="text" id="username" placeholder="Your name" required />
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
 
-      <label>Email</label>
-      <input type="email" id="email" placeholder="you@example.com" required />
+  <button onclick="register()">Register</button>
+  <a href="login.html" class="login-link">Login</a>
 
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Password" minlength="4" required />
+  <p class="version">Version: 1.0.0</p>
+</div>
 
-      <button type="submit" class="btn">Create account</button>
-    </form>
+<script>
+function register() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-    <p class="muted">Have an account? <a href="login.html">Login here</a></p>
-  </div>
+  if (!name || !email || !password) {
+    alert("All fields are required!");
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  if (users.find(u => u.email === email)) {
+    alert("This email is already registered!");
+    return;
+  }
+
+  const newUser = {
+    id: 'INV' + Math.floor(Math.random() * 100000),
+    name,
+    email,
+    password,
+    balance: 0,
+    review: 0,
+    success: 0
+  };
+
+  users.push(newUser);
+  localStorage.setItem('users', JSON.stringify(users));
+  alert("Registration successful! You can now log in.");
+  window.location.href = 'login.html';
+}
+</script>
 </body>
 </html>
