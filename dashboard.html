@@ -58,23 +58,16 @@
   <canvas id="growthChart" height="180"></canvas>
 </div>
 
-<!-- Stats Table -->
+<!-- Deposit History -->
 <div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-  <div style="display:flex; justify-content:center; gap:25px; margin-bottom:10px;">
-    <strong style="color:#0b8a3c;">Today</strong>
-    <strong>Total</strong>
-  </div>
-  <table style="width:100%; border:1px solid #0b8a3c; border-collapse:collapse; border-radius:10px;">
-    <tr style="border-bottom:1px solid #0b8a3c;">
-      <td style="padding:10px;">Referral Bonus</td><td style="text-align:right;">₦0.00</td>
-    </tr>
-    <tr style="border-bottom:1px solid #0b8a3c;">
-      <td style="padding:10px;">Team Earnings</td><td style="text-align:right;">₦0.00</td>
-    </tr>
-    <tr>
-      <td style="padding:10px;">Investment Profit</td><td style="text-align:right;">₦0.00</td>
-    </tr>
-  </table>
+  <h3 style="color:#0b8a3c; margin-bottom:10px;">Deposit History</h3>
+  <div id="depositHistory" style="max-height:200px; overflow-y:auto; color:#222;">Loading...</div>
+</div>
+
+<!-- Withdrawal History -->
+<div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <h3 style="color:#0b8a3c; margin-bottom:10px;">Withdrawal History</h3>
+  <div id="withdrawHistory" style="max-height:200px; overflow-y:auto; color:#222;">Loading...</div>
 </div>
 
 <!-- Footer Navigation -->
@@ -94,63 +87,70 @@
 </div>
 
 <script>
-// Load user info
 document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('currentUser')) || {};
   document.getElementById('userName').textContent = user.name || 'User';
   document.getElementById('userId').textContent = user.id || 'N/A';
   document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
-  document.getElementById('balance').textContent = user.balance ? user.balance.toFixed(2) : '0.00';
-  document.getElementById('review').textContent = user.review || '0.00';
-  document.getElementById('success').textContent = user.success || '0.00';
 
-  // Chart
+  const deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
+  const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
+
+  // ✅ Filter to show only current user’s records
+  const userDeposits = deposits.filter(d => d.userId === user.id);
+  const userWithdrawals = withdrawals.filter(w => w.userId === user.id);
+
+  const approvedDeposits = userDeposits.filter(d => d.status === 'approved');
+  const balance = approvedDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
+
+  document.getElementById('balance').textContent = balance.toFixed(2);
+
+  loadHistory(userDeposits, 'depositHistory');
+  loadHistory(userWithdrawals, 'withdrawHistory');
+
+  // Simple chart
   const ctx = document.getElementById('growthChart');
   new Chart(ctx, {
     type: 'line',
     data: {
       labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
       datasets: [
-        {
-          label: 'Deposits',
-          data: [100, 300, 200, 400, 600, 800, 900],
-          borderColor: '#0b8a3c',
-          tension: 0.4,
-          fill: false
-        },
-        {
-          label: 'Investments',
-          data: [50, 150, 100, 250, 400, 600, 700],
-          borderColor: '#34c759',
-          tension: 0.4,
-          fill: false
-        }
+        { label:'Deposits', data:[100,200,400,300,600,800,900], borderColor:'#0b8a3c', tension:0.4, fill:false },
+        { label:'Investments', data:[50,150,200,250,400,500,700], borderColor:'#34c759', tension:0.4, fill:false }
       ]
     },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: true, position: 'bottom' }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options:{ responsive:true, plugins:{ legend:{ display:true, position:'bottom' } }, scales:{ y:{ beginAtZero:true } } }
   });
 });
 
-function deposit() {
-  window.location.href = 'deposit.html';
+function loadHistory(list, elementId){
+  const container = document.getElementById(elementId);
+  if(list.length === 0){ container.innerHTML = "<p style='color:gray;'>No records found.</p>"; return; }
+
+  container.innerHTML = "";
+  list.slice().reverse().forEach(item => {
+    const statusColor = item.status === 'approved' ? '#28a745' : '#ffc107';
+    container.innerHTML += `
+      <div style="border-bottom:1px solid #eee; padding:8px 0;">
+        <strong>₦${item.amount.toLocaleString()}</strong>
+        <span style="float:right; color:${statusColor}; font-weight:bold;">${item.status}</span><br>
+        <small>Note: ${item.note || 'N/A'} 
+          <button onclick="copyText('${item.note || ''}')" style="background:#0b8a3c;color:white;border:none;padding:3px 6px;border-radius:5px;">Copy</button>
+        </small><br>
+        <small style="color:gray;">${new Date(item.date).toLocaleString()}</small>
+      </div>`;
+  });
 }
-function withdraw() {
-  window.location.href = 'withdraw.html';
+
+function copyText(text){
+  navigator.clipboard.writeText(text);
+  alert("Copied: " + text);
 }
-function invest() {
-  window.location.href = 'plans.html';
-}
-function invite() {
-  window.location.href = 'referral.html';
-}
+
+function deposit(){ window.location.href='deposit.html'; }
+function withdraw(){ window.location.href='withdraw.html'; }
+function invest(){ window.location.href='plans.html'; }
+function invite(){ window.location.href='referral.html'; }
 </script>
 
 </body>
