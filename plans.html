@@ -1,53 +1,171 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Investment Plans - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Plans - Smart Investment</title>
+<script src="main.js" defer></script>
+<style>
+  body {
+    margin: 0;
+    font-family: Poppins, Arial, sans-serif;
+    background: #f6f9f6;
+  }
+  .plan-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: 0.3s;
+  }
+  .plan-card:hover {
+    transform: translateY(-4px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 15px;
+    margin: 20px;
+  }
+  button {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: bold;
+    color: white;
+    background: #0b8a3c;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0a7836;
+  }
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    width: 85%;
+    max-width: 400px;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
 
-  <header class="header">
-    <h1>📊 Investment Plans</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="register.html">Register</a>
-      <a href="login.html">Login</a>
-    </nav>
-  </header>
+<!-- Header -->
+<div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  <h2 style="margin:0; font-size:22px;">Smart Investment</h2>
+  <p style="margin:5px 0 0; opacity:0.9;">Choose a plan and grow your income 🌱</p>
+</div>
 
-  <main class="main">
-    <section>
-      <h2>Choose Your Investment Plan</h2>
+<!-- Plans Grid -->
+<div class="grid">
+  <div class="plan-card">
+    <h3>Starter Plan</h3>
+    <p>Invest ₦1,000 – ₦4,999</p>
+    <h2 style="color:#0b8a3c;">10% ROI</h2>
+    <p>Duration: 3 days</p>
+    <button onclick="openModal('Starter Plan')">Buy Now</button>
+  </div>
 
-      <div class="grid-container">
+  <div class="plan-card">
+    <h3>Silver Plan</h3>
+    <p>Invest ₦5,000 – ₦9,999</p>
+    <h2 style="color:#0b8a3c;">20% ROI</h2>
+    <p>Duration: 5 days</p>
+    <button onclick="openModal('Silver Plan')">Buy Now</button>
+  </div>
 
-        <div class="card">
-          <h3>🌾 Plan A</h3>
-          <p>Invest ₦5,000<br>Earn ₦6,500 in 5 days</p>
-          <a href="deposit.html" class="btn">Invest Now</a>
-        </div>
+  <div class="plan-card">
+    <h3>Gold Plan</h3>
+    <p>Invest ₦10,000 – ₦49,999</p>
+    <h2 style="color:#0b8a3c;">30% ROI</h2>
+    <p>Duration: 7 days</p>
+    <button onclick="openModal('Gold Plan')">Buy Now</button>
+  </div>
 
-        <div class="card">
-          <h3>🌽 Plan B</h3>
-          <p>Invest ₦10,000<br>Earn ₦13,000 in 10 days</p>
-          <a href="deposit.html" class="btn">Invest Now</a>
-        </div>
+  <div class="plan-card">
+    <h3>Diamond Plan</h3>
+    <p>Invest ₦50,000 – ₦99,999</p>
+    <h2 style="color:#0b8a3c;">45% ROI</h2>
+    <p>Duration: 10 days</p>
+    <button onclick="openModal('Diamond Plan')">Buy Now</button>
+  </div>
 
-        <div class="card">
-          <h3>🌿 Plan C</h3>
-          <p>Invest ₦20,000<br>Earn ₦30,000 in 15 days</p>
-          <a href="deposit.html" class="btn">Invest Now</a>
-        </div>
+  <div class="plan-card">
+    <h3>Platinum Plan</h3>
+    <p>Invest ₦100,000 – ₦499,999</p>
+    <h2 style="color:#0b8a3c;">60% ROI</h2>
+    <p>Duration: 14 days</p>
+    <button onclick="openModal('Platinum Plan')">Buy Now</button>
+  </div>
 
-      </div>
-    </section>
-  </main>
+  <div class="plan-card">
+    <h3>Elite Plan</h3>
+    <p>Invest ₦500,000+</p>
+    <h2 style="color:#0b8a3c;">80% ROI</h2>
+    <p>Duration: 21 days</p>
+    <button onclick="openModal('Elite Plan')">Buy Now</button>
+  </div>
+</div>
 
-  <footer class="footer">
-    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
-  </footer>
+<!-- Modal -->
+<div id="buyModal" class="modal">
+  <div class="modal-content">
+    <h2 id="modalTitle">Plan Details</h2>
+    <p>Get more info and confirm your investment in this plan.</p>
+    <button onclick="goToProductInfo()">Continue</button>
+    <br><br>
+    <button style="background:#ccc; color:black;" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Footer Navigation -->
+<div style="position:fixed; bottom:0; left:0; width:100%; background:white; display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0;">
+  <div style="text-align:center;" onclick="window.location.href='index.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" style="width:24px;"><br><span>Home</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='plans.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/786/786407.png" style="width:24px;"><br><span>Plans</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='referral.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" style="width:24px;"><br><span>Invite</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='dashboard.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="width:24px;"><br><span>Me</span>
+  </div>
+</div>
+
+<script>
+let selectedPlan = "";
+
+function openModal(plan) {
+  selectedPlan = plan;
+  document.getElementById("modalTitle").textContent = plan;
+  document.getElementById("buyModal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("buyModal").style.display = "none";
+}
+
+function goToProductInfo() {
+  localStorage.setItem("selectedPlan", selectedPlan);
+  window.location.href = "product_info.html";
+}
+</script>
 
 </body>
-  </html>
+</html>
