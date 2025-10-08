@@ -1,73 +1,109 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Site Under Maintenance</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ff4d4d, #006400);
-      color: white;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .container {
-      max-width: 600px;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-    .snowflake {
-      position: fixed;
-      top: -10px;
-      color: white;
-      font-size: 1.5em;
-      animation: fall 10s linear infinite;
-    }
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Investment - Home</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>🎄 Website Under Maintenance 🎅</h1>
-    <p>We are currently working hard to bring you a better experience.<br>
-       Please check back soon. ❄️</p>
+<body style="margin:0; font-family:Poppins, Arial, sans-serif; background:#f6f9f6;">
+
+<!-- Header -->
+<div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
+  <h2 style="margin:0; font-size:22px;">Smart Investment</h2>
+  <p style="margin:5px 0 0; opacity:0.9;">Grow Your Wealth with Confidence 💹</p>
+</div>
+
+<!-- Intro Section -->
+<div style="background:#0b8a3c; color:white; padding:20px; text-align:left;">
+  <h1 style="margin:0; font-size:30px;">Welcome to Smart Investment</h1>
+  <p style="margin-top:10px; font-size:15px; line-height:1.5;">
+    Join thousands of smart investors building wealth through modern farming,
+    tech-driven plans, and transparent earnings. 
+  </p>
+</div>
+
+<!-- About / Platform Info -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="margin:0; color:#0b8a3c;">Why Choose Smart Investment?</h3>
+  <ul style="margin-top:10px; padding-left:20px; line-height:1.8; color:#333;">
+    <li>✅ Transparent and reliable farming investment.</li>
+    <li>✅ Earn daily and withdraw anytime after maturity.</li>
+    <li>✅ Referral rewards for inviting friends.</li>
+    <li>✅ Simple, fast, and secure platform.</li>
+  </ul>
+</div>
+
+<!-- Chart Section -->
+<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
+  <h3 style="margin-bottom:10px; color:#0b8a3c;">Platform Growth Overview</h3>
+  <canvas id="growthChart" height="180"></canvas>
+</div>
+
+<!-- Stats Table -->
+<div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <div style="display:flex; justify-content:center; gap:25px; margin-bottom:10px;">
+    <strong style="color:#0b8a3c;">Today</strong>
+    <strong>Total</strong>
   </div>
+  <table style="width:100%; border:1px solid #0b8a3c; border-collapse:collapse; border-radius:10px;">
+    <tr style="border-bottom:1px solid #0b8a3c;">
+      <td style="padding:10px;">New Investors</td><td style="text-align:right;">125</td>
+    </tr>
+    <tr style="border-bottom:1px solid #0b8a3c;">
+      <td style="padding:10px;">Active Plans</td><td style="text-align:right;">80</td>
+    </tr>
+    <tr>
+      <td style="padding:10px;">Total Payouts</td><td style="text-align:right;">₦150,000+</td>
+    </tr>
+  </table>
+</div>
 
-  <!-- Snow Effect -->
-  <script>
-    function createSnowflake() {
-      const snowflake = document.createElement("div");
-      snowflake.classList.add("snowflake");
-      snowflake.textContent = "❄";
-      snowflake.style.left = Math.random() * window.innerWidth + "px";
-      snowflake.style.animationDuration = (5 + Math.random() * 5) + "s";
-      document.body.appendChild(snowflake);
+<!-- CTA Buttons -->
+<div style="display:flex; justify-content:space-around; margin:20px;">
+  <button onclick="window.location.href='register.html'" style="background:#0b8a3c; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Register</button>
+  <button onclick="window.location.href='login.html'" style="background:#34c759; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Login</button>
+  <button onclick="window.location.href='plans.html'" style="background:#1a9349; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">View Plans</button>
+</div>
 
-      setTimeout(() => {
-        snowflake.remove();
-      }, 10000);
+<!-- Footer Navigation -->
+<div style="position:fixed; bottom:0; left:0; width:100%; background:white; display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0;">
+  <div style="text-align:center;" onclick="window.location.href='index.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" style="width:24px;"><br><span>Home</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='plans.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/786/786407.png" style="width:24px;"><br><span>Plans</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='referral.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" style="width:24px;"><br><span>Invite</span>
+  </div>
+  <div style="text-align:center;" onclick="window.location.href='dashboard.html'">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="width:24px;"><br><span>Me</span>
+  </div>
+</div>
+
+<!-- Chart Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ctx = document.getElementById('growthChart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      datasets: [{
+        label: 'Platform Growth',
+        data: [50, 120, 200, 300, 500, 800, 1000],
+        backgroundColor: '#0b8a3c'
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
     }
-    setInterval(createSnowflake, 200);
-  </script>
+  });
+});
+</script>
+
 </body>
 </html>
