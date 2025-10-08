@@ -1,25 +1,133 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Deposits</title>
-<script src="main.js" defer></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background: #06121a;
+    color: #fff;
+  }
+  .header {
+    background: linear-gradient(90deg,#0b8a3c,#006b2f);
+    padding: 20px;
+    text-align: center;
+  }
+  .container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #071d14;
+    border-radius: 15px;
+    padding: 15px;
+  }
+  .deposit-card {
+    border-bottom: 1px solid #0f3b25;
+    padding: 12px 0;
+  }
+  .amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00ff99;
+  }
+  .status {
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  .btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 5px;
+  }
+  .approve {
+    background: #0b8a3c;
+  }
+  .decline {
+    background: #ff3b30;
+  }
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #00ff99;
+    text-decoration: none;
+  }
+</style>
 </head>
-<body style="margin:0;font-family:Arial, sans-serif;background:#06121a;color:#fff;">
-
-  <div style="padding:14px;background:linear-gradient(90deg,#0b8a3c,#006b2f);text-align:center;">
-    <h2 style="margin:0;">Pending Deposits</h2>
+<body>
+  <div class="header">
+    <h2>Admin - All Deposits</h2>
   </div>
 
-  <div style="max-width:980px;margin:16px auto;padding:12px;">
-    <div id="pendingDepositsContainer" style="background:#071d14;border-radius:8px;padding:10px;">
-      <!-- JS will inject pending deposits here -->
-      <p>Loading...</p>
-    </div>
-
-    <div style="margin-top:12px;">
-      <a href="admin.html" style="color:#00ff99;text-decoration:none;">← Back to Admin</a>
-    </div>
+  <div class="container" id="depositContainer">
+    <p>Loading deposits...</p>
   </div>
+
+  <a href="admin.html" class="back-link">← Back to Admin</a>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("depositContainer");
+  let deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
+
+  if (deposits.length === 0) {
+    container.innerHTML = "<p style='color:gray;'>No deposits found.</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+  deposits.slice().reverse().forEach((item, i) => {
+    const index = deposits.length - 1 - i; // actual index
+    const div = document.createElement("div");
+    div.className = "deposit-card";
+    const color =
+      item.status === "approved" ? "#28a745" :
+      item.status === "declined" ? "#ff3b30" : "#ffc107";
+
+    div.innerHTML = `
+      <div class="amount">₦${item.amount.toLocaleString()}</div>
+      <div>User: <strong>${item.user || "Unknown"}</strong></div>
+      <div>Note: ${item.note}</div>
+      <div>
+        Status: <span id="status-${index}" class="status" style="color:${color};">${item.status}</span>
+      </div>
+      <div>Date: <small>${new Date(item.date).toLocaleString()}</small></div>
+      <div style="margin-top:5px;">
+        <button class="btn approve" onclick="updateStatus(${index}, 'approved')">Approve</button>
+        <button class="btn decline" onclick="updateStatus(${index}, 'declined')">Decline</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+});
+
+function updateStatus(index, status) {
+  let deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
+  deposits[index].status = status;
+  localStorage.setItem("deposits", JSON.stringify(deposits));
+
+  // Update immediately on screen
+  const statusSpan = document.getElementById("status-" + index);
+  statusSpan.textContent = status;
+
+  if (status === "approved") {
+    statusSpan.style.color = "#28a745";
+  } else if (status === "declined") {
+    statusSpan.style.color = "#ff3b30";
+  } else {
+    statusSpan.style.color = "#ffc107";
+  }
+
+  alert("Deposit marked as " + status.toUpperCase());
+}
+</script>
 
 </body>
 </html>
