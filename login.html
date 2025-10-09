@@ -96,12 +96,14 @@ function login() {
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
+    // ✅ Ajiye currentUser
     localStorage.setItem('currentUser', JSON.stringify(user));
     alert("Login successful!");
     window.location.href = 'dashboard.html';
   } else {
     alert("Invalid email or password");
   }
+}
 }
 
 // idan user ya riga ya shiga, kada a sake nuna login page
