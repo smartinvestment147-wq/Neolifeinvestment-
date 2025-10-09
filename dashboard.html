@@ -89,12 +89,18 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // ✅ Check if user is logged in
-  const user = JSON.parse(localStorage.getItem('currentUser'));
-  if (!user) {
-    alert('Please login first!');
-    window.location.href = 'login.html';
-    return;
-  }
+const userStr = localStorage.getItem('currentUser');
+let user = null;
+try {
+  user = JSON.parse(userStr);
+} catch(e) {
+  user = null;
+}
+if (!user || !user.email) {
+  alert('Please login first!');
+  window.location.href = 'login.html';
+  return;
+}  }
 
   // ✅ Display user data
   document.getElementById('userName').textContent = user.username || user.name || 'User';
