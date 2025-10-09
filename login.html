@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,50 +77,38 @@ a {
   <img src="logo.png" alt="Logo" class="logo">
   <h2>Smart Investment</h2>
 
-  <input type="email" id="email" placeholder="Email" required>
-  <input type="password" id="password" placeholder="Password" required>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
 
   <button onclick="login()">Login</button>
   <a href="register.html" class="register-link">Register</a>
 
-  <p><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
-  <p class="version">Version: 1.0.2</p>
+  <p><a href="#" onclick="forgotPassword()">Forget Password?</a></p>
+  <p class="version">Version: 1.0.0</p>
 </div>
 
 <script>
-// Prevent logged-in users from returning to login page
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-if (currentUser) {
-  window.location.href = "dashboard.html";
-}
-
 function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
-
-  if (!email || !password) {
-    alert("Please fill in all fields!");
-    return;
-  }
 
   const users = JSON.parse(localStorage.getItem('users') || '[]');
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
-    // Set currentUser properly
-    const currentUserData = {
-      id: user.id || Date.now(),
-      name: user.name || "Investor",
-      email: user.email,
-      balance: user.balance || 0,
-      role: user.role || "user"
-    };
-    localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-
+    localStorage.setItem('currentUser', JSON.stringify(user));
     alert("Login successful!");
-    window.location.href = "dashboard.html";
+    window.location.href = 'dashboard.html';
   } else {
     alert("Invalid email or password");
+  }
+}
+
+// idan user ya riga ya shiga, kada a sake nuna login page
+window.onload = () => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    window.location.href = 'dashboard.html';
   }
 }
 
