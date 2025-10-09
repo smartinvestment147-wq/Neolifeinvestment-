@@ -1,45 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Withdraw - Neolife Investment</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="main.js" defer></script>
-</head>
-<body>
-  <div class="card">
-    <div class="top-row">
-      <h1>🏦 Withdraw Funds</h1>
-      <a href="dashboard.html" class="link-btn logout">⬅ Back</a>
-    </div>
-
-    <h3>Choose Amount</h3>
-    <div class="price-buttons">
-      <button class="btn withdraw" onclick="selectWithdrawAmount(1000)">₦1,000</button>
-      <button class="btn withdraw" onclick="selectWithdrawAmount(5000)">₦5,000</button>
-      <button class="btn withdraw" onclick="selectWithdrawAmount(10000)">₦10,000</button>
-      <button class="btn withdraw" onclick="selectWithdrawAmount(20000)">₦20,000</button>
-    </div>
-
-    <h3>Or Enter Custom Amount</h3>
-    <form onsubmit="goToWithdrawConfirm(event)" class="inline-form">
-      <input type="number" id="withdrawAmount" placeholder="Amount (₦)" required min="1" />
-      <button type="submit" class="btn withdraw">Request Withdraw</button>
-    </form>
-  </div>
-
-  <script>
-    function selectWithdrawAmount(amount) {
-      document.getElementById("withdrawAmount").value = amount;
-      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Withdraw</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="main.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f6f8;
+      margin: 0;
+      padding: 0;
     }
 
-    function goToWithdrawConfirm(event) {
-      event.preventDefault();
-      const amount = document.getElementById("withdrawAmount").value;
-      // tura zuwa confirm-withdraw page
-      window.location.href = `confirm-withdraw.html?amount=${amount}`;
+    .header {
+      background: #0a9a2a;
+      color: white;
+      padding: 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 18px;
+      position: sticky;
+      top: 0;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-weight: 600;
+      color: #666;
+      border-radius: 4px;
+    }
+
+    .tab.active {
+      color: white;
+      background: #0a9a2a;
+    }
+
+    .section {
+      background: white;
+      margin: 10px;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section h3 {
+      font-size: 15px;
+      color: #0a9a2a;
+      margin-bottom: 8px;
+    }
+
+    .balance-box {
+      background: #0a9a2a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 10px;
+    }
+
+    .balance-box h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .withdraw-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .info-box {
+      background: #ff8c00;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .submit-btn {
+      width: calc(100% - 20px);
+      margin: 15px 10px;
+      background: #0a9a2a;
+      color: white;
+      font-size: 16px;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .submit-btn:active {
+      background: #06781e;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .value {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body onload="loadWithdrawPage()">
+
+  <div class="header">Withdrawal</div>
+
+  <div class="tabs">
+    <div class="tab active">BANK</div>
+    <div class="tab">TRX</div>
+    <div class="tab">USDT</div>
+  </div>
+
+  <div class="section">
+    <h3>Account</h3>
+    <p><strong>Bank Account:</strong> 9113469866 (Your Name)</p>
+  </div>
+
+  <div class="balance-box">
+    <p>Account Balance</p>
+    <h2 id="withdrawBalance">₦0.00</h2>
+    <p style="font-size: 13px;">Daily withdrawal frequency: 8 times</p>
+  </div>
+
+  <div class="section">
+    <h3>Withdrawal amount</h3>
+    <input type="number" id="withdrawAmount" class="withdraw-input" placeholder="Enter amount" />
+    
+    <div class="row">
+      <span>Bank Service Fee:</span>
+      <span class="value">0%</span>
+    </div>
+    <div class="row">
+      <span>Actual amount received:</span>
+      <span class="value" id="actualReceived">₦0.00</span>
+    </div>
+
+    <div class="info-box">
+      Activity: No fee! Bank service platform bears all charges.
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="handleWithdraw()">Submit</button>
+
+  <script>
+    function loadWithdrawPage() {
+      const user = getCurrentUser();
+      if (!user) {
+        alert("Please login first!");
+        window.location.href = "login.html";
+        return;
+      }
+      document.getElementById("withdrawBalance").textContent = "₦" + user.balance.toFixed(2);
+    }
+
+    function handleWithdraw() {
+      const amount = parseFloat(document.getElementById("withdrawAmount").value);
+      withdraw(amount);
     }
   </script>
 </body>
