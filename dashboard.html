@@ -1,168 +1,86 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - Smart Investment</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="main.js" defer></script>
-<style>
-body {
-  margin: 0;
-  font-family: Poppins, Arial, sans-serif;
-  background: #f6f9f6;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Investment - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-<!-- Header -->
-<div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
-  <h2 style="margin:0; font-size:22px;">Smart Investment</h2>
-  <p style="margin:5px 0 0; opacity:0.9;">Welcome back 👋</p>
-</div>
+  <!-- Header -->
+  <header class="bg-green-600 text-white p-4 shadow-lg flex justify-between items-center">
+    <h1 class="text-xl font-bold">Smart Investment</h1>
+    <button id="logoutBtn" class="bg-red-500 px-3 py-1 rounded-lg hover:bg-red-600">Logout</button>
+  </header>
 
-<!-- User Info -->
-<div style="background:#0b8a3c; color:white; padding:20px;">
-  <h1 id="userName" style="margin:0; font-size:32px;">User</h1>
-  <p style="margin:5px 0;">ID: <span id="userId">--</span></p>
-  <p id="userEmail" style="margin:5px 0;">Loading...</p>
-</div>
+  <!-- Dashboard Container -->
+  <main class="flex-1 flex flex-col items-center justify-center p-6">
+    <div class="bg-white shadow-2xl rounded-2xl p-6 w-full max-w-md text-center">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4">Welcome, <span id="userName"></span> 👋</h2>
+      <p class="text-gray-500 mb-2"><strong>Email:</strong> <span id="userEmail"></span></p>
+      
+      <div class="mt-4 bg-gray-100 rounded-xl py-4">
+        <p class="text-lg font-semibold text-gray-600">Current Balance</p>
+        <p id="balance" class="text-3xl font-bold text-green-600">₦0.00</p>
+      </div>
 
-<!-- Balance Card -->
-<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
-  <h3>Account Balance (₦)</h3>
-  <h1 id="balance" style="color:#0b8a3c; margin:10px 0; font-size:35px;">0.00</h1>
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4 mt-6">
+        <button id="depositBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">Deposit</button>
+        <button id="withdrawBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Withdraw</button>
+      </div>
 
-  <div style="display:flex; justify-content:space-between; margin-top:15px;">
-    <button onclick="withdraw()" style="background:#e6f4ea; color:#0b8a3c; border:none; padding:10px 15px; border-radius:10px; font-weight:bold;">Withdraw</button>
-    <img src="https://cdn-icons-png.flaticon.com/512/745/745205.png" alt="coins" style="width:60px; height:60px;">
-  </div>
-
-  <div style="display:flex; justify-content:space-around; margin-top:15px;">
-    <div style="text-align:center;">
-      <h3 id="review" style="margin:0; color:#0b8a3c;">0.00</h3>
-      <p style="margin:0;">Pending Withdrawal</p>
+      <!-- Referral and Plans -->
+      <div class="mt-6 flex justify-center gap-4">
+        <button id="plansBtn" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Plans</button>
+        <button id="referralBtn" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600">Referral</button>
+      </div>
     </div>
-    <div style="text-align:center;">
-      <h3 id="success" style="margin:0; color:#0b8a3c;">0.00</h3>
-      <p style="margin:0;">Completed</p>
-    </div>
-  </div>
-</div>
+  </main>
 
-<!-- Quick Actions -->
-<div style="display:flex; justify-content:space-around; margin:20px;">
-  <button onclick="deposit()" style="background:#0b8a3c; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Deposit</button>
-  <button onclick="invest()" style="background:#34c759; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Invest</button>
-  <button onclick="invite()" style="background:#1a9349; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:bold;">Invite</button>
-</div>
+  <footer class="bg-green-700 text-white text-center py-3">
+    <p>© 2025 Smart Investment. All Rights Reserved.</p>
+  </footer>
 
-<!-- Chart Section -->
-<div style="background:white; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,0.08); margin:20px; padding:20px;">
-  <h3 style="margin-bottom:10px; color:#0b8a3c;">Growth Chart</h3>
-  <canvas id="growthChart" height="180"></canvas>
-</div>
+  <script>
+    // Load user from localStorage
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
 
-<!-- Deposit History -->
-<div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-  <h3 style="color:#0b8a3c; margin-bottom:10px;">Deposit History</h3>
-  <div id="depositHistory" style="max-height:200px; overflow-y:auto; color:#222;">Loading...</div>
-</div>
+    if (!user || (!user.id && !user.email)) {
+      alert('Invalid user session!');
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('userName').textContent = user.name || 'User';
+      document.getElementById('userEmail').textContent = user.email || 'Unknown';
+      document.getElementById('balance').textContent = '₦' + (user.balance || 0).toFixed(2);
+    }
 
-<!-- Withdrawal History -->
-<div style="background:white; border-radius:20px; margin:20px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-  <h3 style="color:#0b8a3c; margin-bottom:10px;">Withdrawal History</h3>
-  <div id="withdrawHistory" style="max-height:200px; overflow-y:auto; color:#222;">Loading...</div>
-</div>
+    // Navigation
+    document.getElementById('depositBtn').addEventListener('click', () => {
+      window.location.href = 'deposit.html';
+    });
 
-<!-- Footer Navigation -->
-<div style="position:fixed; bottom:0; left:0; width:100%; background:white; display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0;">
-  <div style="text-align:center;" onclick="window.location.href='index.html'">
-    <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" style="width:24px;"><br><span>Home</span>
-  </div>
-  <div style="text-align:center;" onclick="window.location.href='plans.html'">
-    <img src="https://cdn-icons-png.flaticon.com/512/786/786407.png" style="width:24px;"><br><span>Plans</span>
-  </div>
-  <div style="text-align:center;" onclick="window.location.href='referral.html'">
-    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" style="width:24px;"><br><span>Invite</span>
-  </div>
-  <div style="text-align:center;" onclick="window.location.href='dashboard.html'">
-    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="width:24px;"><br><span>Me</span>
-  </div>
-</div>
+    document.getElementById('withdrawBtn').addEventListener('click', () => {
+      window.location.href = 'withdraw.html';
+    });
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const userStr = localStorage.getItem('currentUser');
-  if (!userStr) {
-    alert('Please login first!');
-    window.location.href = 'login.html';
-    return;
-  }
+    document.getElementById('plansBtn').addEventListener('click', () => {
+      window.location.href = 'plans.html';
+    });
 
-  const user = JSON.parse(userStr);
-  if (!user || !user.id) {
-    alert('Invalid user session!');
-    window.location.href = 'login.html';
-    return;
-  }
+    document.getElementById('referralBtn').addEventListener('click', () => {
+      window.location.href = 'referral.html';
+    });
 
-  document.getElementById('userName').textContent = user.username || user.name || 'User';
-  document.getElementById('userId').textContent = user.id;
-  document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
-
-  const deposits = JSON.parse(localStorage.getItem('deposits') || '[]').filter(d => d.userId === user.id);
-  const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]').filter(w => w.userId === user.id);
-
-  const approvedDeposits = deposits.filter(d => d.status === 'Approved');
-  const balance = approvedDeposits.reduce((sum, d) => sum + Number(d.amount || 0), 0);
-
-  document.getElementById('balance').textContent = balance.toFixed(2);
-
-  loadHistory(deposits, 'depositHistory');
-  loadHistory(withdrawals, 'withdrawHistory');
-
-  // Chart
-  const ctx = document.getElementById('growthChart');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-      datasets: [
-        { label:'Deposits', data:[100,200,400,300,600,800,900], borderColor:'#0b8a3c', tension:0.4, fill:false },
-        { label:'Investments', data:[50,150,200,250,400,500,700], borderColor:'#34c759', tension:0.4, fill:false }
-      ]
-    },
-    options:{ responsive:true, plugins:{ legend:{ display:true, position:'bottom' } }, scales:{ y:{ beginAtZero:true } } }
-  });
-});
-
-function loadHistory(list, elementId){
-  const container = document.getElementById(elementId);
-  if(list.length === 0){ container.innerHTML = "<p style='color:gray;'>No records found.</p>"; return; }
-
-  container.innerHTML = "";
-  list.slice().reverse().forEach(item => {
-    const color = item.status === 'Approved' ? '#28a745' : item.status === 'Declined' ? '#dc3545' : '#ffc107';
-    container.innerHTML += `
-      <div style="border-bottom:1px solid #eee; padding:8px 0;">
-        <strong>₦${item.amount}</strong>
-        <span style="float:right; color:${color}; font-weight:bold;">${item.status}</span><br>
-        <small>Note: ${item.note || 'N/A'} 
-          <button onclick="copyText('${item.note || ''}')" style="background:#0b8a3c;color:white;border:none;padding:3px 6px;border-radius:5px;">Copy</button>
-        </small><br>
-        <small style="color:gray;">${new Date(item.date).toLocaleString()}</small>
-      </div>`;
-  });
-}
-
-function copyText(text){ navigator.clipboard.writeText(text); alert("Copied: " + text); }
-function deposit(){ window.location.href='deposit.html'; }
-function withdraw(){ window.location.href='withdraw.html'; }
-function invest(){ window.location.href='plans.html'; }
-function invite(){ window.location.href='referral.html'; }
-</script>
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('loggedInUser');
+      alert('Logged out successfully!');
+      window.location.href = 'login.html';
+    });
+  </script>
 
 </body>
 </html>
