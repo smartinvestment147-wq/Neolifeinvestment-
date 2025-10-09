@@ -116,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('userId').textContent = user.id || 'N/A';
   document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
 
+function deposit(){ window.location.href='deposit.html'; }
+
   // ✅ Fetch deposits & withdrawals
   const deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
   const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
