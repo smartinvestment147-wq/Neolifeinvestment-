@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,10 +83,16 @@ a {
   <a href="register.html" class="register-link">Register</a>
 
   <p><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
-  <p class="version">Version: 1.0.1</p>
+  <p class="version">Version: 1.0.2</p>
 </div>
 
 <script>
+// Prevent logged-in users from returning to login page
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (currentUser) {
+  window.location.href = "dashboard.html";
+}
+
 function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -101,17 +106,18 @@ function login() {
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
-    // Save current user login
-    localStorage.setItem('currentUser', JSON.stringify({
-      id: user.id,
-      name: user.name,
+    // Set currentUser properly
+    const currentUserData = {
+      id: user.id || Date.now(),
+      name: user.name || "Investor",
       email: user.email,
       balance: user.balance || 0,
       role: user.role || "user"
-    }));
+    };
+    localStorage.setItem('currentUser', JSON.stringify(currentUserData));
 
     alert("Login successful!");
-    window.location.href = 'dashboard.html';
+    window.location.href = "dashboard.html";
   } else {
     alert("Invalid email or password");
   }
