@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,12 +110,10 @@
 </head>
 
 <body>
-  <!-- Header -->
   <div style="padding:20px; text-align:center; color:white;">
     <h2 style="margin:0;">Recharge</h2>
   </div>
 
-  <!-- Deposit Card -->
   <div class="container">
     <p class="title">Minimum recharge amount: (₦4500)</p>
 
@@ -148,7 +145,6 @@
     <button class="btn" onclick="quickRecharge()">Quick Recharge</button>
   </div>
 
-  <!-- Deposit Instructions -->
   <div class="instructions">
     <h4 style="color:#0b8a3c;">Deposit Instructions</h4>
     <ol>
@@ -161,6 +157,16 @@
 
   <script>
     let selectedAmount = 4500;
+    let currentUser = null;
+
+    // ✅ Check login on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      currentUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+      if (!currentUser || !currentUser.username) {
+        alert("Please log in first!");
+        window.location.href = "login.html";
+      }
+    });
 
     function selectAmount(amount, event) {
       selectedAmount = amount;
@@ -169,36 +175,34 @@
       event.target.classList.add("active");
     }
 
-    async function quickRecharge() {
-      const channel = document.getElementById("channel").value;
-      const user = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
-
-      if (!user.username) {
+    function quickRecharge() {
+      if (!currentUser || !currentUser.username) {
         alert("Please log in first!");
         window.location.href = "login.html";
         return;
       }
+
+      const channel = document.getElementById("channel").value;
 
       if (selectedAmount < 4500) {
         alert("Minimum deposit is ₦4500");
         return;
       }
 
-      // Generate note
       const randomPart = Math.floor(100000 + Math.random() * 900000);
       const timestamp = Date.now().toString().slice(-5);
       const note = `PN${randomPart}${timestamp}`;
 
-      // Save temporary data for payment.html
+      // Save for payment page
       localStorage.setItem("depositAmount", selectedAmount);
       localStorage.setItem("depositChannel", channel);
       localStorage.setItem("depositNote", note);
-      localStorage.setItem("depositUser", user.username);
+      localStorage.setItem("depositUser", currentUser.username);
 
-      // Add pending deposit to localStorage for admin panel
+      // Save to deposit history
       const deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
       deposits.push({
-        username: user.username,
+        username: currentUser.username,
         amount: selectedAmount,
         channel: channel,
         note: note,
@@ -207,7 +211,6 @@
       });
       localStorage.setItem("deposits", JSON.stringify(deposits));
 
-      // Go to payment page
       window.location.href = "payment.html";
     }
   </script>
