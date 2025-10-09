@@ -1,5 +1,6 @@
+
 // ================================
-// SMART INVESTMENT SYSTEM - main.js (Full Working Version)
+// SMART INVESTMENT SYSTEM - main.js
 // ================================
 
 // -------- Helper Functions --------
@@ -27,6 +28,14 @@ function saveDeposits(deposits) {
   localStorage.setItem("deposits", JSON.stringify(deposits));
 }
 
+function getWithdrawals() {
+  return JSON.parse(localStorage.getItem("withdrawals") || "[]");
+}
+
+function saveWithdrawals(withdrawals) {
+  localStorage.setItem("withdrawals", JSON.stringify(withdrawals));
+}
+
 function formatCurrency(amount) {
   return "₦" + parseFloat(amount || 0).toLocaleString() + ".00";
 }
@@ -34,7 +43,6 @@ function formatCurrency(amount) {
 // -------- Registration --------
 function registerUser(name, email, password) {
   const users = getUsers();
-
   if (users.some(u => u.email === email)) {
     alert("Email already registered!");
     return;
@@ -47,7 +55,7 @@ function registerUser(name, email, password) {
     password,
     balance: 0,
     review: 0,
-    success: 0,
+    success: 0
   };
 
   users.push(newUser);
@@ -58,15 +66,12 @@ function registerUser(name, email, password) {
 
 // -------- Login --------
 function loginUser(email, password) {
-  // Admin login
   if (email === "admin@smart.com" && password === "admin123") {
     alert("Welcome Admin!");
-    localStorage.setItem("isAdmin", "true");
     window.location.href = "admin.html";
     return;
   }
 
-  // Normal user login
   const users = getUsers();
   const user = users.find(u => u.email === email && u.password === password);
 
@@ -75,7 +80,6 @@ function loginUser(email, password) {
     return;
   }
 
-  localStorage.removeItem("isAdmin");
   saveCurrentUser(user);
   alert("Login successful!");
   window.location.href = "dashboard.html";
@@ -84,14 +88,12 @@ function loginUser(email, password) {
 // -------- Logout --------
 function logoutUser() {
   localStorage.removeItem("currentUser");
-  localStorage.removeItem("isAdmin");
   window.location.href = "login.html";
 }
 
 // -------- Deposit --------
 function createDeposit(amount, channel, note) {
   const user = getCurrentUser();
-
   if (!user.id) {
     alert("Please login first.");
     return;
@@ -106,7 +108,7 @@ function createDeposit(amount, channel, note) {
     channel,
     note,
     date: new Date().toISOString(),
-    status: "pending",
+    status: "pending"
   };
 
   deposits.push(newDeposit);
@@ -115,144 +117,138 @@ function createDeposit(amount, channel, note) {
   window.location.href = "dashboard.html";
 }
 
-// -------- Update Deposit Status (Admin) --------
+// -------- Withdrawal --------
+function createWithdrawal(amount, account, method) {
+  const user = getCurrentUser();
+  if (!user.id) {
+    alert("Please login first.");
+    return;
+  }
+
+  if (amount <= 0) {
+    alert("Invalid withdrawal amount.");
+    return;
+  }
+
+  if (user.balance < amount) {
+    alert("Insufficient balance.");
+    return;
+  }
+
+  const withdrawals = getWithdrawals();
+  const newWithdrawal = {
+    id: "W" + Math.floor(Math.random() * 1000000),
+    userId: user.id,
+    user: user.name,
+    amount: parseFloat(amount),
+    account,
+    method,
+    date: new Date().toISOString(),
+    status: "pending"
+  };
+
+  withdrawals.push(newWithdrawal);
+  saveWithdrawals(withdrawals);
+
+  alert("Withdrawal submitted successfully! Await admin approval.");
+  window.location.href = "dashboard.html";
+}
+
+// -------- Admin Deposit Status --------
 function updateDepositStatus(index, status) {
   const deposits = getDeposits();
-
   if (!deposits[index]) return;
 
   deposits[index].status = status;
   saveDeposits(deposits);
 
-  // Update user's balance if approved
   if (status === "approved") {
     const users = getUsers();
     const user = users.find(u => u.id === deposits[index].userId);
     if (user) {
-      user.balance = (user.balance || 0) + deposits[index].amount;
+      user.balance += deposits[index].amount;
+      saveUsers(users);
+    }
+  }
+  alert("Deposit marked as " + status.toUpperCase());
+}
+
+// -------- Admin Withdrawal Status --------
+function updateWithdrawalStatus(index, status) {
+  const withdrawals = getWithdrawals();
+  if (!withdrawals[index]) return;
+
+  withdrawals[index].status = status;
+  saveWithdrawals(withdrawals);
+
+  if (status === "approved") {
+    const users = getUsers();
+    const user = users.find(u => u.id === withdrawals[index].userId);
+    if (user) {
+      user.balance -= withdrawals[index].amount;
       saveUsers(users);
     }
   }
 
-  // Update UI instantly
-  const statusEl = document.getElementById("status-" + index);
-  if (statusEl) {
-    statusEl.textContent = status;
-    statusEl.className =
-      status === "approved"
-        ? "text-green-500 font-bold"
-        : status === "declined"
-        ? "text-red-500 font-bold"
-        : "text-yellow-500 font-bold";
-  }
-
-  alert("Deposit marked as " + status.toUpperCase());
+  alert("Withdrawal marked as " + status.toUpperCase());
 }
 
-// -------- Load User Dashboard --------
+// -------- Load Dashboard --------
 function loadDashboard() {
   const user = getCurrentUser();
-
   if (!user.id) {
     window.location.href = "login.html";
     return;
   }
 
   document.getElementById("userName").textContent = user.name;
-  document.getElementById("userId").textContent = user.id;
-  document.getElementById("userEmail").textContent = user.email;
-  document.getElementById("balance").textContent = formatCurrency(user.balance || 0);
-  document.getElementById("review").textContent = user.review || 0;
-  document.getElementById("success").textContent = user.success || 0;
+  document.getElementById("balance").textContent = formatCurrency(user.balance);
 
-  // Load deposit history
+  // Deposit history
   const deposits = getDeposits().filter(d => d.userId === user.id);
-  const container = document.getElementById("depositHistory");
+  const depContainer = document.getElementById("depositHistory");
+  depContainer.innerHTML = deposits.length
+    ? deposits.map(d => `
+        <div style="border-bottom:1px solid #0a2f1d; padding:8px 0;">
+          <strong>${formatCurrency(d.amount)}</strong>
+          <span style="float:right;color:${
+            d.status === "approved" ? "#28a745" :
+            d.status === "declined" ? "#ff3b30" : "#ffc107"
+          };font-weight:bold;">${d.status}</span><br>
+          <small>${new Date(d.date).toLocaleString()}</small>
+        </div>`).join("")
+    : "<p style='color:gray;'>No deposits yet.</p>";
 
-  if (!container) return;
-  if (deposits.length === 0) {
-    container.innerHTML = "<p class='text-gray-400'>No deposits yet.</p>";
-    return;
+  // Withdrawal history
+  const withdrawals = getWithdrawals().filter(w => w.userId === user.id);
+  const withContainer = document.getElementById("withdrawHistory");
+  if (withContainer) {
+    withContainer.innerHTML = withdrawals.length
+      ? withdrawals.map(w => `
+          <div style="border-bottom:1px solid #0a2f1d; padding:8px 0;">
+            <strong>${formatCurrency(w.amount)}</strong>
+            <span style="float:right;color:${
+              w.status === "approved" ? "#28a745" :
+              w.status === "declined" ? "#ff3b30" : "#ffc107"
+            };font-weight:bold;">${w.status}</span><br>
+            <small>${new Date(w.date).toLocaleString()}</small>
+          </div>`).join("")
+      : "<p style='color:gray;'>No withdrawals yet.</p>";
   }
-
-  container.innerHTML = deposits
-    .slice()
-    .reverse()
-    .map(dep => {
-      const color =
-        dep.status === "approved"
-          ? "text-green-500"
-          : dep.status === "declined"
-          ? "text-red-500"
-          : "text-yellow-500";
-      return `
-        <div class="border-b border-gray-700 py-2">
-          <strong>${formatCurrency(dep.amount)}</strong>
-          <span class="${color} float-right font-bold">${dep.status}</span><br>
-          <small class="text-gray-400">Note: ${dep.note}</small><br>
-          <small class="text-gray-500">${new Date(dep.date).toLocaleString()}</small>
-        </div>`;
-    })
-    .join("");
 }
 
 // -------- Load Admin Dashboard --------
 function loadAdminDashboard() {
   const users = getUsers();
   const deposits = getDeposits();
+  const withdrawals = getWithdrawals();
 
   document.getElementById("adminTotalUsers").innerText = users.length;
-
-  const pendingDeposits = deposits.filter(d => d.status === "pending");
-  document.getElementById("adminPendingCount").innerText = pendingDeposits.length;
-
-  const totalPending = pendingDeposits.reduce((sum, d) => sum + d.amount, 0);
-  document.getElementById("adminTotalDeposits").innerText = formatCurrency(totalPending);
-
-  // Chart (optional)
-  const ctx = document.getElementById("adminChart");
-  if (ctx) {
-    new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: deposits.slice(-7).map(d => d.user || "User"),
-        datasets: [
-          {
-            label: "Deposit Amount (₦)",
-            data: deposits.slice(-7).map(d => d.amount),
-            backgroundColor: "#00ff99",
-          },
-        ],
-      },
-      options: {
-        scales: { y: { beginAtZero: true } },
-        plugins: { legend: { display: false } },
-      },
-    });
-  }
-}
-
-// -------- Load Admin Users --------
-function loadAdminUsers() {
-  const container = document.getElementById("usersContainer");
-  const users = getUsers();
-
-  if (users.length === 0) {
-    container.innerHTML = "<p class='text-gray-400'>No registered users.</p>";
-    return;
-  }
-
-  container.innerHTML = users
-    .map(
-      u => `
-    <div class="bg-gray-900 p-4 rounded-xl mb-3 border border-gray-800">
-      <strong class="text-white">${u.name}</strong><br>
-      <span class="text-gray-300">Email:</span> ${u.email}<br>
-      <span class="text-gray-300">ID:</span> ${u.id}<br>
-      <span class="text-gray-300">Balance:</span> ${formatCurrency(u.balance || 0)}
-    </div>`
-    )
-    .join("");
+  document.getElementById("adminPendingCount").innerText =
+    deposits.filter(d => d.status === "pending").length +
+    withdrawals.filter(w => w.status === "pending").length;
+  document.getElementById("adminTotalDeposits").innerText =
+    formatCurrency(deposits.reduce((sum, d) => sum + d.amount, 0));
 }
 
 // -------- Load Admin Deposits --------
@@ -260,41 +256,63 @@ function loadAdminDeposits() {
   const container = document.getElementById("depositContainer");
   const deposits = getDeposits();
 
-  if (deposits.length === 0) {
-    container.innerHTML = "<p class='text-gray-400'>No deposits found.</p>";
-    return;
-  }
+  container.innerHTML = deposits.length
+    ? deposits.map((item, i) => `
+      <div style="border-bottom:1px solid #0f3b25; padding:8px;">
+        <strong>${item.user}</strong> - ${formatCurrency(item.amount)}<br>
+        <small>${new Date(item.date).toLocaleString()}</small><br>
+        Status: <span id="dep-${i}" style="color:${
+          item.status === "approved" ? "#28a745" :
+          item.status === "declined" ? "#ff3b30" : "#ffc107"
+        }">${item.status}</span><br>
+        <button onclick="adminApproveDeposit(${i})">Approve</button>
+        <button onclick="adminDeclineDeposit(${i})">Decline</button>
+      </div>`).join("")
+    : "<p>No deposits found.</p>";
+}
 
-  container.innerHTML = deposits
-    .slice()
-    .reverse()
-    .map((item, i) => {
-      const index = deposits.length - 1 - i;
-      const color =
-        item.status === "approved"
-          ? "text-green-500"
-          : item.status === "declined"
-          ? "text-red-500"
-          : "text-yellow-500";
+function adminApproveDeposit(i) {
+  updateDepositStatus(i, "approved");
+  document.getElementById("dep-" + i).textContent = "approved";
+  document.getElementById("dep-" + i).style.color = "#28a745";
+}
 
-      return `
-      <div class="bg-gray-900 p-4 rounded-xl mb-4 border border-gray-800">
-        <div class="flex justify-between items-center">
-          <div>
-            <p class="text-white font-semibold">${item.user}</p>
-            <p class="text-sm text-gray-400">${new Date(item.date).toLocaleString()}</p>
-          </div>
-          <p class="text-white font-bold">${formatCurrency(item.amount)}</p>
-        </div>
-        <p class="text-gray-300 text-sm mt-2">Note: ${item.note}</p>
-        <p id="status-${index}" class="${color} font-bold mt-2">${item.status}</p>
-        <div class="flex gap-2 mt-3">
-          <button onclick="updateDepositStatus(${index}, 'approved')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg shadow">Approve</button>
-          <button onclick="updateDepositStatus(${index}, 'declined')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg shadow">Decline</button>
-        </div>
-      </div>`;
-    })
-    .join("");
+function adminDeclineDeposit(i) {
+  updateDepositStatus(i, "declined");
+  document.getElementById("dep-" + i).textContent = "declined";
+  document.getElementById("dep-" + i).style.color = "#ff3b30";
+}
+
+// -------- Load Admin Withdrawals --------
+function loadAdminWithdrawals() {
+  const container = document.getElementById("withdrawContainer");
+  const withdrawals = getWithdrawals();
+
+  container.innerHTML = withdrawals.length
+    ? withdrawals.map((item, i) => `
+      <div style="border-bottom:1px solid #0f3b25; padding:8px;">
+        <strong>${item.user}</strong> - ${formatCurrency(item.amount)}<br>
+        <small>${new Date(item.date).toLocaleString()}</small><br>
+        Status: <span id="with-${i}" style="color:${
+          item.status === "approved" ? "#28a745" :
+          item.status === "declined" ? "#ff3b30" : "#ffc107"
+        }">${item.status}</span><br>
+        <button onclick="adminApproveWithdraw(${i})">Approve</button>
+        <button onclick="adminDeclineWithdraw(${i})">Decline</button>
+      </div>`).join("")
+    : "<p>No withdrawals found.</p>";
+}
+
+function adminApproveWithdraw(i) {
+  updateWithdrawalStatus(i, "approved");
+  document.getElementById("with-" + i).textContent = "approved";
+  document.getElementById("with-" + i).style.color = "#28a745";
+}
+
+function adminDeclineWithdraw(i) {
+  updateWithdrawalStatus(i, "declined");
+  document.getElementById("with-" + i).textContent = "declined";
+  document.getElementById("with-" + i).style.color = "#ff3b30";
 }
 
 // -------- Page Detection --------
@@ -303,6 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (path.includes("dashboard.html")) loadDashboard();
   if (path.includes("admin.html")) loadAdminDashboard();
-  if (path.includes("admin-users.html")) loadAdminUsers();
   if (path.includes("admin-deposits.html")) loadAdminDeposits();
+  if (path.includes("admin-withdrawals.html")) loadAdminWithdrawals();
 });
