@@ -88,6 +88,14 @@ a {
 
 <script src="main.js"></script>
 <script>
+// Auto redirect if already logged in
+window.addEventListener('DOMContentLoaded', () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  if (currentUser) {
+    window.location.href = "dashboard.html";
+  }
+});
+
 function handleLogin() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
@@ -97,7 +105,16 @@ function handleLogin() {
     return;
   }
 
-  loginUser(email, password);
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  const user = users.find(u => u.email === email && u.password === password);
+
+  if (user) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    alert("Login successful!");
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Invalid email or password");
+  }
 }
 
 function forgotPassword() {
