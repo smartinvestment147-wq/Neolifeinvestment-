@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Settings | Smart Investment</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-gray-900 py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <h1 class="text-2xl font-bold text-green-400">Smart Investment - Admin</h1>
+      <nav>
+        <a href="admin.html" class="mx-3 text-gray-300 hover:text-white">Dashboard</a>
+        <a href="admin-users.html" class="mx-3 text-gray-300 hover:text-white">Users</a>
+        <a href="admin-deposits.html" class="mx-3 text-gray-300 hover:text-white">Deposits</a>
+        <a href="admin-settings.html" class="mx-3 text-green-400 font-semibold">Settings</a>
+        <button onclick="logoutUser()" class="ml-3 bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Settings Content -->
+  <main class="container mx-auto mt-10 px-6">
+    <h2 class="text-2xl font-bold mb-8 text-green-400">Admin Control Panel</h2>
+
+    <!-- Actions -->
+    <div class="space-y-6">
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">🧾 Delete All Deposits</h3>
+        <p class="text-gray-400 mb-3">This will remove <b>all deposits</b> made by users.</p>
+        <button onclick="clearAllDeposits()" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded font-semibold">Delete Deposits</button>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">👥 Delete All Users</h3>
+        <p class="text-gray-400 mb-3">This will remove <b>all registered users</b> from the system.</p>
+        <button onclick="clearAllUsers()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded font-semibold">Delete Users</button>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">🧨 Reset Entire System</h3>
+        <p class="text-gray-400 mb-3">This clears <b>all system data</b> (users, deposits, and sessions).</p>
+        <button onclick="resetSystem()" class="bg-red-700 hover:bg-red-800 px-4 py-2 rounded font-semibold">Reset System</button>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-3">🚪 Logout Admin</h3>
+        <p class="text-gray-400 mb-3">Exit admin session and go back to login page.</p>
+        <button onclick="logoutUser()" class="bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded font-semibold">Logout</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center text-gray-500 mt-10 py-4 border-t border-gray-800">
+    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // 🧾 Delete all deposits
+    function clearAllDeposits() {
+      if (confirm("Are you sure you want to delete ALL deposits?")) {
+        localStorage.removeItem("deposits");
+        alert("All deposits deleted successfully!");
+      }
+    }
+
+    // 👥 Delete all users
+    function clearAllUsers() {
+      if (confirm("Are you sure you want to delete ALL users?")) {
+        localStorage.removeItem("users");
+        localStorage.removeItem("currentUser");
+        alert("All users deleted successfully!");
+      }
+    }
+
+    // 🧨 Reset the whole system
+    function resetSystem() {
+      if (confirm("⚠️ This will clear ALL system data! Continue?")) {
+        localStorage.clear();
+        alert("System has been reset successfully!");
+        window.location.href = "login.html";
+      }
+    }
+  </script>
+</body>
+</html>
