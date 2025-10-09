@@ -249,13 +249,14 @@
         return;
       }
 
-      const deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
-      deposits.push({
-        amount: amt,
-        note: note,
-        status: "Pending",
-        date: new Date().toLocaleString()
-      });
+      const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+deposits.push({
+  userId: currentUser.id,
+  amount: amt,
+  note: note,
+  status: "Pending",
+  date: new Date().toLocaleString()
+});
 
       localStorage.setItem("deposits", JSON.stringify(deposits));
       alert("✅ Payment confirmation sent!\nStatus: Pending verification.");
