@@ -1,33 +1,26 @@
-
 // ================================
-// SMART INVESTMENT SYSTEM - main.js
+// SMART INVESTMENT SYSTEM - main.js (Stable Version)
 // ================================
 
 // -------- Helper Functions --------
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
-
 function saveUsers(users) {
   localStorage.setItem("users", JSON.stringify(users));
 }
-
 function getCurrentUser() {
-  return JSON.parse(localStorage.getItem("currentUser") || "{}");
+  return JSON.parse(localStorage.getItem("currentUser") || "null");
 }
-
 function saveCurrentUser(user) {
   localStorage.setItem("currentUser", JSON.stringify(user));
 }
-
 function getDeposits() {
   return JSON.parse(localStorage.getItem("deposits") || "[]");
 }
-
 function saveDeposits(deposits) {
   localStorage.setItem("deposits", JSON.stringify(deposits));
 }
-
 function formatCurrency(amount) {
   return "₦" + parseFloat(amount || 0).toLocaleString() + ".00";
 }
@@ -39,7 +32,6 @@ function registerUser(name, email, password) {
     alert("Email already registered!");
     return;
   }
-
   const newUser = {
     id: "U" + Math.floor(Math.random() * 1000000),
     name,
@@ -49,7 +41,6 @@ function registerUser(name, email, password) {
     review: 0,
     success: 0
   };
-
   users.push(newUser);
   saveUsers(users);
   alert("Registration successful! Please login.");
@@ -61,6 +52,7 @@ function loginUser(email, password) {
   // Admin login
   if (email === "admin@smart.com" && password === "admin123") {
     alert("Welcome Admin!");
+    localStorage.setItem("isAdmin", "true");
     window.location.href = "admin.html";
     return;
   }
@@ -68,13 +60,13 @@ function loginUser(email, password) {
   // Normal user login
   const users = getUsers();
   const user = users.find(u => u.email === email && u.password === password);
-
   if (!user) {
     alert("Invalid email or password!");
     return;
   }
 
   saveCurrentUser(user);
+  localStorage.removeItem("isAdmin");
   alert("Login successful!");
   window.location.href = "dashboard.html";
 }
@@ -82,19 +74,20 @@ function loginUser(email, password) {
 // -------- Logout --------
 function logoutUser() {
   localStorage.removeItem("currentUser");
+  localStorage.removeItem("isAdmin");
   window.location.href = "login.html";
 }
 
 // -------- Deposit --------
 function createDeposit(amount, channel, note) {
   const user = getCurrentUser();
-  if (!user.id) {
+  if (!user || !user.id) {
     alert("Please login first.");
+    window.location.href = "login.html";
     return;
   }
 
   const deposits = getDeposits();
-
   const newDeposit = {
     id: "D" + Math.floor(Math.random() * 1000000),
     userId: user.id,
@@ -105,7 +98,6 @@ function createDeposit(amount, channel, note) {
     date: new Date().toISOString(),
     status: "pending"
   };
-
   deposits.push(newDeposit);
   saveDeposits(deposits);
   alert("Deposit submitted successfully! Await admin approval.");
@@ -120,7 +112,6 @@ function updateDepositStatus(index, status) {
   deposits[index].status = status;
   saveDeposits(deposits);
 
-  // Update user's balance if approved
   if (status === "approved") {
     const users = getUsers();
     const user = users.find(u => u.id === deposits[index].userId);
@@ -136,7 +127,9 @@ function updateDepositStatus(index, status) {
 // -------- Load User Dashboard --------
 function loadDashboard() {
   const user = getCurrentUser();
-  if (!user.id) {
+
+  // If not logged in, redirect to login
+  if (!user || !user.id) {
     window.location.href = "login.html";
     return;
   }
@@ -148,7 +141,6 @@ function loadDashboard() {
   document.getElementById("review").textContent = user.review || 0;
   document.getElementById("success").textContent = user.success || 0;
 
-  // Load deposit history for this user only
   const deposits = getDeposits().filter(d => d.userId === user.id);
   const container = document.getElementById("depositHistory");
 
@@ -163,7 +155,6 @@ function loadDashboard() {
     const color =
       dep.status === "approved" ? "#28a745" :
       dep.status === "declined" ? "#ff3b30" : "#ffc107";
-
     container.innerHTML += `
       <div style="border-bottom:1px solid #0a2f1d; padding:8px 0;">
         <strong>${formatCurrency(dep.amount)}</strong>
@@ -176,6 +167,11 @@ function loadDashboard() {
 
 // -------- Load Admin Dashboard --------
 function loadAdminDashboard() {
+  if (localStorage.getItem("isAdmin") !== "true") {
+    window.location.href = "login.html";
+    return;
+  }
+
   const users = getUsers();
   const deposits = getDeposits();
 
@@ -187,7 +183,6 @@ function loadAdminDashboard() {
   const totalPending = pendingDeposits.reduce((sum, d) => sum + d.amount, 0);
   document.getElementById("adminTotalDeposits").innerText = formatCurrency(totalPending);
 
-  // Chart data
   const ctx = document.getElementById("adminChart");
   if (ctx) {
     new Chart(ctx, {
@@ -210,9 +205,13 @@ function loadAdminDashboard() {
 
 // -------- Load Admin Users --------
 function loadAdminUsers() {
+  if (localStorage.getItem("isAdmin") !== "true") {
+    window.location.href = "login.html";
+    return;
+  }
+
   const container = document.getElementById("usersContainer");
   const users = getUsers();
-
   if (users.length === 0) {
     container.innerHTML = "<p style='color:gray;'>No registered users.</p>";
     return;
@@ -232,6 +231,11 @@ function loadAdminUsers() {
 
 // -------- Load Admin Deposits --------
 function loadAdminDeposits() {
+  if (localStorage.getItem("isAdmin") !== "true") {
+    window.location.href = "login.html";
+    return;
+  }
+
   const container = document.getElementById("depositContainer");
   const deposits = getDeposits();
 
@@ -280,7 +284,6 @@ function adminDecline(index) {
 // -------- Page Detection --------
 document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
-
   if (path.includes("dashboard.html")) loadDashboard();
   if (path.includes("admin.html")) loadAdminDashboard();
   if (path.includes("admin-users.html")) loadAdminUsers();
