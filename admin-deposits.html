@@ -1,133 +1,96 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Deposits</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Poppins', Arial, sans-serif;
-    background: #06121a;
-    color: #fff;
-  }
-  .header {
-    background: linear-gradient(90deg,#0b8a3c,#006b2f);
-    padding: 20px;
-    text-align: center;
-  }
-  .container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: #071d14;
-    border-radius: 15px;
-    padding: 15px;
-  }
-  .deposit-card {
-    border-bottom: 1px solid #0f3b25;
-    padding: 12px 0;
-  }
-  .amount {
-    font-size: 18px;
-    font-weight: bold;
-    color: #00ff99;
-  }
-  .status {
-    font-weight: bold;
-    transition: 0.3s;
-  }
-  .btn {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #fff;
-    font-weight: bold;
-    margin-left: 5px;
-  }
-  .approve {
-    background: #0b8a3c;
-  }
-  .decline {
-    background: #ff3b30;
-  }
-  .back-link {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    color: #00ff99;
-    text-decoration: none;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Deposits | Smart Investment</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="header">
-    <h2>Admin - All Deposits</h2>
-  </div>
+<body class="bg-gray-950 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-gray-900 py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <h1 class="text-2xl font-bold text-green-400">Smart Investment - Admin</h1>
+      <nav>
+        <a href="admin.html" class="mx-3 text-gray-300 hover:text-white">Dashboard</a>
+        <a href="admin-users.html" class="mx-3 text-gray-300 hover:text-white">Users</a>
+        <a href="admin-deposits.html" class="mx-3 text-green-400 font-semibold">Deposits</a>
+        <a href="admin-settings.html" class="mx-3 text-gray-300 hover:text-white">Settings</a>
+        <button onclick="logoutUser()" class="ml-3 bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
+      </nav>
+    </div>
+  </header>
 
-  <div class="container" id="depositContainer">
-    <p>Loading deposits...</p>
-  </div>
+  <!-- Content -->
+  <main class="container mx-auto mt-10 px-6">
+    <h2 class="text-2xl font-bold mb-8 text-green-400">🧾 All Deposits</h2>
 
-  <a href="admin.html" class="back-link">← Back to Admin</a>
+    <div id="depositContainer" class="space-y-4"></div>
+  </main>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("depositContainer");
-  let deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
+  <footer class="text-center text-gray-500 mt-10 py-4 border-t border-gray-800">
+    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
+  </footer>
 
-  if (deposits.length === 0) {
-    container.innerHTML = "<p style='color:gray;'>No deposits found.</p>";
-    return;
-  }
+  <script src="main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", loadAdminDeposits);
 
-  container.innerHTML = "";
-  deposits.slice().reverse().forEach((item, i) => {
-    const index = deposits.length - 1 - i; // actual index
-    const div = document.createElement("div");
-    div.className = "deposit-card";
-    const color =
-      item.status === "approved" ? "#28a745" :
-      item.status === "declined" ? "#ff3b30" : "#ffc107";
+    // Custom UI update for approve/decline
+    function adminApprove(index) {
+      updateDepositStatus(index, "approved");
+      alert("Deposit approved successfully!");
+      loadAdminDeposits();
+    }
 
-    div.innerHTML = `
-      <div class="amount">₦${item.amount.toLocaleString()}</div>
-      <div>User: <strong>${item.user || "Unknown"}</strong></div>
-      <div>Note: ${item.note}</div>
-      <div>
-        Status: <span id="status-${index}" class="status" style="color:${color};">${item.status}</span>
-      </div>
-      <div>Date: <small>${new Date(item.date).toLocaleString()}</small></div>
-      <div style="margin-top:5px;">
-        <button class="btn approve" onclick="updateStatus(${index}, 'approved')">Approve</button>
-        <button class="btn decline" onclick="updateStatus(${index}, 'declined')">Decline</button>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-});
+    function adminDecline(index) {
+      updateDepositStatus(index, "declined");
+      alert("Deposit declined!");
+      loadAdminDeposits();
+    }
 
-function updateStatus(index, status) {
-  let deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
-  deposits[index].status = status;
-  localStorage.setItem("deposits", JSON.stringify(deposits));
+    // Overwrite loadAdminDeposits with better UI
+    function loadAdminDeposits() {
+      const container = document.getElementById("depositContainer");
+      const deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
 
-  // Update immediately on screen
-  const statusSpan = document.getElementById("status-" + index);
-  statusSpan.textContent = status;
+      if (deposits.length === 0) {
+        container.innerHTML = "<p class='text-gray-400'>No deposits found.</p>";
+        return;
+      }
 
-  if (status === "approved") {
-    statusSpan.style.color = "#28a745";
-  } else if (status === "declined") {
-    statusSpan.style.color = "#ff3b30";
-  } else {
-    statusSpan.style.color = "#ffc107";
-  }
+      container.innerHTML = "";
 
-  alert("Deposit marked as " + status.toUpperCase());
-}
-</script>
+      deposits.slice().reverse().forEach((item, i) => {
+        const index = deposits.length - 1 - i;
+        const color =
+          item.status === "approved" ? "text-green-400" :
+          item.status === "declined" ? "text-red-400" :
+          "text-yellow-400";
 
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 p-5 rounded-lg shadow-md";
+
+        card.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-semibold">${item.user || "Unknown User"}</h3>
+            <span class="${color} font-semibold uppercase">${item.status}</span>
+          </div>
+
+          <p class="text-gray-300 mb-1">Amount: <span class="font-bold text-green-400">₦${item.amount.toLocaleString()}</span></p>
+          <p class="text-gray-400 mb-1">Channel: ${item.channel || "N/A"}</p>
+          <p class="text-gray-400 mb-1">Note: ${item.note || "—"}</p>
+          <p class="text-gray-500 text-sm mb-3">Date: ${new Date(item.date).toLocaleString()}</p>
+
+          <div class="flex space-x-3 mt-2">
+            <button onclick="adminApprove(${index})" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded font-semibold">Approve</button>
+            <button onclick="adminDecline(${index})" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded font-semibold">Decline</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+  </script>
 </body>
 </html>
