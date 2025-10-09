@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,38 +79,25 @@ a {
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
 
-  <button onclick="login()">Login</button>
+  <button onclick="handleLogin()">Login</button>
   <a href="register.html" class="register-link">Register</a>
 
   <p><a href="#" onclick="forgotPassword()">Forget Password?</a></p>
   <p class="version">Version: 1.0.0</p>
 </div>
 
+<script src="main.js"></script>
 <script>
-function login() {
+function handleLogin() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  const users = JSON.parse(localStorage.getItem('users') || '[]');
-  const user = users.find(u => u.email === email && u.password === password);
-
-  if (user) {
-    // ✅ Ajiye currentUser
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    alert("Login successful!");
-    window.location.href = 'dashboard.html';
-  } else {
-    alert("Invalid email or password");
+  if (!email || !password) {
+    alert("Please enter your email and password!");
+    return;
   }
-}
-}
 
-// idan user ya riga ya shiga, kada a sake nuna login page
-window.onload = () => {
-  const currentUser = localStorage.getItem('currentUser');
-  if (currentUser) {
-    window.location.href = 'dashboard.html';
-  }
+  loginUser(email, password);
 }
 
 function forgotPassword() {
