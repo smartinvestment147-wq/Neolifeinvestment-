@@ -1,118 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin Dashboard - Smart Investment</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="main.js" defer></script>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #06121a;
-    color: #fff;
-  }
-  header {
-    background: linear-gradient(90deg, #0b8a3c, #006b2f);
-    text-align: center;
-    padding: 18px;
-  }
-  header h2 {
-    margin: 0;
-  }
-  header p {
-    margin: 6px 0 0;
-    opacity: 0.9;
-  }
-  .container {
-    max-width: 1000px;
-    margin: 18px auto;
-    padding: 12px;
-  }
-  .stats {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-  .stat-box {
-    background: #0f2b22;
-    padding: 14px;
-    border-radius: 8px;
-    flex: 1;
-    min-width: 180px;
-  }
-  .stat-box h4 {
-    margin: 0;
-    color: #00ff99;
-  }
-  .stat-box p {
-    font-size: 20px;
-    margin: 6px 0 0;
-  }
-  .card {
-    background: #071c14;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 14px;
-  }
-  .actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-  }
-  .actions a div {
-    padding: 12px;
-    border-radius: 10px;
-    color: #fff;
-    text-align: center;
-  }
-  .actions a {
-    text-decoration: none;
-    flex: 1;
-  }
-  .green { background: #0b8a3c; }
-  .red { background: #ff4444; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Smart Investment</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body onload="loadAdminDashboard()">
+<body class="bg-gray-950 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-gray-900 py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-6">
+      <h1 class="text-2xl font-bold text-green-400">Smart Investment - Admin</h1>
+      <nav>
+        <a href="admin.html" class="mx-3 text-green-400 font-semibold">Dashboard</a>
+        <a href="admin-users.html" class="mx-3 text-gray-300 hover:text-white">Users</a>
+        <a href="admin-deposits.html" class="mx-3 text-gray-300 hover:text-white">Deposits</a>
+        <button onclick="logoutUser()" class="ml-3 bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
+      </nav>
+    </div>
+  </header>
 
-<header>
-  <h2>Admin Dashboard</h2>
-  <p>Overview & Quick Actions</p>
-</header>
-
-<div class="container">
-  <div class="stats">
-    <div class="stat-box">
-      <h4>Total Users</h4>
-      <p id="adminTotalUsers">0</p>
+  <!-- Dashboard Overview -->
+  <main class="container mx-auto mt-10 px-6">
+    <h2 class="text-2xl font-bold mb-6">Admin Overview</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-gray-400">Total Users</h3>
+        <p id="adminTotalUsers" class="text-3xl font-bold text-green-400">0</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-gray-400">Pending Deposits</h3>
+        <p id="adminPendingCount" class="text-3xl font-bold text-yellow-400">0</p>
+      </div>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-gray-400">Total Pending Amount</h3>
+        <p id="adminTotalDeposits" class="text-3xl font-bold text-blue-400">₦0.00</p>
+      </div>
     </div>
 
-    <div class="stat-box">
-      <h4>Pending Deposits</h4>
-      <p id="adminPendingCount">0</p>
+    <!-- Chart -->
+    <div class="mt-10 bg-gray-800 p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4 text-green-400">Recent Deposit Activity</h3>
+      <canvas id="adminChart" height="120"></canvas>
     </div>
+  </main>
 
-    <div class="stat-box">
-      <h4>Total Pending (₦)</h4>
-      <p id="adminTotalDeposits">₦0.00</p>
-    </div>
-  </div>
+  <footer class="text-center text-gray-500 mt-10 py-4 border-t border-gray-800">
+    <p>&copy; 2025 Smart Investment. All rights reserved.</p>
+  </footer>
 
-  <div class="card">
-    <h3 style="color:#00ff99;margin:0 0 8px;">Recent Deposits</h3>
-    <canvas id="adminChart" height="120"></canvas>
-  </div>
-
-  <div class="actions">
-    <a href="admin-deposits.html"><div class="green">Manage Deposits</div></a>
-    <a href="admin-users.html"><div class="green">View Users</div></a>
-    <a href="login.html"><div class="red">Logout</div></a>
-  </div>
-</div>
-
+  <script src="main.js"></script>
 </body>
 </html>
