@@ -77,14 +77,14 @@ a {
   <img src="logo.png" alt="Logo" class="logo">
   <h2>Smart Investment</h2>
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
 
   <button onclick="login()">Login</button>
   <a href="register.html" class="register-link">Register</a>
 
-  <p><a href="#" onclick="forgotPassword()">Forget Password?</a></p>
-  <p class="version">Version: 1.0.0</p>
+  <p><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
+  <p class="version">Version: 1.0.1</p>
 </div>
 
 <script>
@@ -92,17 +92,31 @@ function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
+  if (!email || !password) {
+    alert("Please fill in all fields!");
+    return;
+  }
+
   const users = JSON.parse(localStorage.getItem('users') || '[]');
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    // Save current user login
+    localStorage.setItem('currentUser', JSON.stringify({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      balance: user.balance || 0,
+      role: user.role || "user"
+    }));
+
     alert("Login successful!");
     window.location.href = 'dashboard.html';
   } else {
     alert("Invalid email or password");
   }
 }
+
 function forgotPassword() {
   alert("Please contact support@smartinvestment.com to reset your password.");
 }
