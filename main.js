@@ -68,6 +68,7 @@ function registerUser(name, email, password) {
 function loginUser(email, password) {
   if (email === "admin@smart.com" && password === "admin123") {
     alert("Welcome Admin!");
+    localStorage.setItem("isAdmin", "true");
     window.location.href = "admin.html";
     return;
   }
@@ -81,6 +82,7 @@ function loginUser(email, password) {
   }
 
   saveCurrentUser(user);
+  localStorage.removeItem("isAdmin");
   alert("Login successful!");
   window.location.href = "dashboard.html";
 }
@@ -88,6 +90,7 @@ function loginUser(email, password) {
 // -------- Logout --------
 function logoutUser() {
   localStorage.removeItem("currentUser");
+  localStorage.removeItem("isAdmin");
   window.location.href = "login.html";
 }
 
@@ -96,6 +99,12 @@ function createDeposit(amount, channel, note) {
   const user = getCurrentUser();
   if (!user.id) {
     alert("Please login first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (amount <= 0) {
+    alert("Enter a valid amount!");
     return;
   }
 
@@ -122,6 +131,7 @@ function createWithdrawal(amount, account, method) {
   const user = getCurrentUser();
   if (!user.id) {
     alert("Please login first.");
+    window.location.href = "login.html";
     return;
   }
 
@@ -201,14 +211,17 @@ function loadDashboard() {
     return;
   }
 
-  document.getElementById("userName").textContent = user.name;
-  document.getElementById("balance").textContent = formatCurrency(user.balance);
+  const nameEl = document.getElementById("userName");
+  const balEl = document.getElementById("balance");
+  if (nameEl) nameEl.textContent = user.name;
+  if (balEl) balEl.textContent = formatCurrency(user.balance);
 
   // Deposit history
   const deposits = getDeposits().filter(d => d.userId === user.id);
   const depContainer = document.getElementById("depositHistory");
-  depContainer.innerHTML = deposits.length
-    ? deposits.map(d => `
+  if (depContainer) {
+    depContainer.innerHTML = deposits.length
+      ? deposits.map(d => `
         <div style="border-bottom:1px solid #0a2f1d; padding:8px 0;">
           <strong>${formatCurrency(d.amount)}</strong>
           <span style="float:right;color:${
@@ -217,7 +230,8 @@ function loadDashboard() {
           };font-weight:bold;">${d.status}</span><br>
           <small>${new Date(d.date).toLocaleString()}</small>
         </div>`).join("")
-    : "<p style='color:gray;'>No deposits yet.</p>";
+      : "<p style='color:gray;'>No deposits yet.</p>";
+  }
 
   // Withdrawal history
   const withdrawals = getWithdrawals().filter(w => w.userId === user.id);
@@ -237,82 +251,15 @@ function loadDashboard() {
   }
 }
 
-// -------- Load Admin Dashboard --------
-function loadAdminDashboard() {
-  const users = getUsers();
-  const deposits = getDeposits();
-  const withdrawals = getWithdrawals();
-
-  document.getElementById("adminTotalUsers").innerText = users.length;
-  document.getElementById("adminPendingCount").innerText =
-    deposits.filter(d => d.status === "pending").length +
-    withdrawals.filter(w => w.status === "pending").length;
-  document.getElementById("adminTotalDeposits").innerText =
-    formatCurrency(deposits.reduce((sum, d) => sum + d.amount, 0));
-}
-
-// -------- Load Admin Deposits --------
-function loadAdminDeposits() {
-  const container = document.getElementById("depositContainer");
-  const deposits = getDeposits();
-
-  container.innerHTML = deposits.length
-    ? deposits.map((item, i) => `
-      <div style="border-bottom:1px solid #0f3b25; padding:8px;">
-        <strong>${item.user}</strong> - ${formatCurrency(item.amount)}<br>
-        <small>${new Date(item.date).toLocaleString()}</small><br>
-        Status: <span id="dep-${i}" style="color:${
-          item.status === "approved" ? "#28a745" :
-          item.status === "declined" ? "#ff3b30" : "#ffc107"
-        }">${item.status}</span><br>
-        <button onclick="adminApproveDeposit(${i})">Approve</button>
-        <button onclick="adminDeclineDeposit(${i})">Decline</button>
-      </div>`).join("")
-    : "<p>No deposits found.</p>";
-}
-
-function adminApproveDeposit(i) {
-  updateDepositStatus(i, "approved");
-  document.getElementById("dep-" + i).textContent = "approved";
-  document.getElementById("dep-" + i).style.color = "#28a745";
-}
-
-function adminDeclineDeposit(i) {
-  updateDepositStatus(i, "declined");
-  document.getElementById("dep-" + i).textContent = "declined";
-  document.getElementById("dep-" + i).style.color = "#ff3b30";
-}
-
-// -------- Load Admin Withdrawals --------
-function loadAdminWithdrawals() {
-  const container = document.getElementById("withdrawContainer");
-  const withdrawals = getWithdrawals();
-
-  container.innerHTML = withdrawals.length
-    ? withdrawals.map((item, i) => `
-      <div style="border-bottom:1px solid #0f3b25; padding:8px;">
-        <strong>${item.user}</strong> - ${formatCurrency(item.amount)}<br>
-        <small>${new Date(item.date).toLocaleString()}</small><br>
-        Status: <span id="with-${i}" style="color:${
-          item.status === "approved" ? "#28a745" :
-          item.status === "declined" ? "#ff3b30" : "#ffc107"
-        }">${item.status}</span><br>
-        <button onclick="adminApproveWithdraw(${i})">Approve</button>
-        <button onclick="adminDeclineWithdraw(${i})">Decline</button>
-      </div>`).join("")
-    : "<p>No withdrawals found.</p>";
-}
-
-function adminApproveWithdraw(i) {
-  updateWithdrawalStatus(i, "approved");
-  document.getElementById("with-" + i).textContent = "approved";
-  document.getElementById("with-" + i).style.color = "#28a745";
-}
-
-function adminDeclineWithdraw(i) {
-  updateWithdrawalStatus(i, "declined");
-  document.getElementById("with-" + i).textContent = "declined";
-  document.getElementById("with-" + i).style.color = "#ff3b30";
+// -------- Redirect to Deposit Page --------
+function goToDeposit() {
+  const user = getCurrentUser();
+  if (!user.id) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+    return;
+  }
+  window.location.href = "deposit.html";
 }
 
 // -------- Page Detection --------
