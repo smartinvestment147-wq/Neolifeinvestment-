@@ -7,8 +7,15 @@
 <link rel="icon" href="logo.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script defer src="main.js"></script>
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background: #f6f9f6;
+}
+</style>
 </head>
-<body style="margin:0; font-family:Poppins, Arial, sans-serif; background:#f6f9f6;">
+<body>
 
 <!-- Header -->
 <div style="background:#0b8a3c; color:white; padding:25px 15px; border-bottom-left-radius:25px; border-bottom-right-radius:25px;">
@@ -88,38 +95,39 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // ✅ Check if user is logged in
-const userStr = localStorage.getItem('currentUser');
-let user = null;
-try {
-  user = JSON.parse(userStr);
-} catch(e) {
-  user = null;
-}
-if (!user || !user.email) {
-  alert('Please login first!');
-  window.location.href = 'login.html';
-  return;
-}  }
+  // ✅ Login Check
+  const userStr = localStorage.getItem('currentUser');
+  let user = null;
 
-  // ✅ Display user data
+  try {
+    user = JSON.parse(userStr);
+  } catch (e) {
+    user = null;
+  }
+
+  if (!user || !user.email) {
+    alert('Please login first!');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // ✅ Display user info
   document.getElementById('userName').textContent = user.username || user.name || 'User';
   document.getElementById('userId').textContent = user.id || 'N/A';
   document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
 
+  // ✅ Fetch deposits & withdrawals
   const deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
   const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
-
-  // ✅ Filter user's records
   const userDeposits = deposits.filter(d => d.userId === user.id);
   const userWithdrawals = withdrawals.filter(w => w.userId === user.id);
 
-  // ✅ Calculate approved deposits balance
+  // ✅ Balance
   const approvedDeposits = userDeposits.filter(d => d.status === 'Approved');
   const balance = approvedDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
   document.getElementById('balance').textContent = balance.toFixed(2);
 
-  // ✅ Load histories
+  // ✅ Load History
   loadHistory(userDeposits, 'depositHistory');
   loadHistory(userWithdrawals, 'withdrawHistory');
 
@@ -138,6 +146,7 @@ if (!user || !user.email) {
   });
 });
 
+// ✅ Functions
 function loadHistory(list, elementId){
   const container = document.getElementById(elementId);
   if(list.length === 0){ container.innerHTML = "<p style='color:gray;'>No records found.</p>"; return; }
@@ -158,11 +167,7 @@ function loadHistory(list, elementId){
   });
 }
 
-function copyText(text){
-  navigator.clipboard.writeText(text);
-  alert("Copied: " + text);
-}
-
+function copyText(text){ navigator.clipboard.writeText(text); alert("Copied: " + text); }
 function deposit(){ window.location.href='payment.html'; }
 function withdraw(){ window.location.href='withdraw.html'; }
 function invest(){ window.location.href='plans.html'; }
