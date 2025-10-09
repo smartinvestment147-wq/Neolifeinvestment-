@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,7 +110,14 @@ function handleLogin() {
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
+    // Ensure default properties exist
+    if (!user.balance) user.balance = 0;
+    if (!user.deposits) user.deposits = [];
+    if (!user.withdrawals) user.withdrawals = [];
+
+    // Save current user for session
     localStorage.setItem('currentUser', JSON.stringify(user));
+
     alert("Login successful!");
     window.location.href = "dashboard.html";
   } else {
