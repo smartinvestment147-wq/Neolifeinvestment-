@@ -1,12 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Smart Investment</title>
+<link rel="icon" href="logo.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="main.js" defer></script>
+<script defer src="main.js"></script>
 </head>
 <body style="margin:0; font-family:Poppins, Arial, sans-serif; background:#f6f9f6;">
 
@@ -88,27 +88,36 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const user = JSON.parse(localStorage.getItem('currentUser')) || {};
-  document.getElementById('userName').textContent = user.name || 'User';
+  // ✅ Check if user is logged in
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  if (!user) {
+    alert('Please login first!');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // ✅ Display user data
+  document.getElementById('userName').textContent = user.username || user.name || 'User';
   document.getElementById('userId').textContent = user.id || 'N/A';
   document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
 
   const deposits = JSON.parse(localStorage.getItem('deposits') || '[]');
   const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]');
 
-  // ✅ Filter to show only current user’s records
+  // ✅ Filter user's records
   const userDeposits = deposits.filter(d => d.userId === user.id);
   const userWithdrawals = withdrawals.filter(w => w.userId === user.id);
 
-  const approvedDeposits = userDeposits.filter(d => d.status === 'approved');
+  // ✅ Calculate approved deposits balance
+  const approvedDeposits = userDeposits.filter(d => d.status === 'Approved');
   const balance = approvedDeposits.reduce((sum, d) => sum + Number(d.amount), 0);
-
   document.getElementById('balance').textContent = balance.toFixed(2);
 
+  // ✅ Load histories
   loadHistory(userDeposits, 'depositHistory');
   loadHistory(userWithdrawals, 'withdrawHistory');
 
-  // Simple chart
+  // ✅ Chart
   const ctx = document.getElementById('growthChart');
   new Chart(ctx, {
     type: 'line',
@@ -129,11 +138,12 @@ function loadHistory(list, elementId){
 
   container.innerHTML = "";
   list.slice().reverse().forEach(item => {
-    const statusColor = item.status === 'approved' ? '#28a745' : '#ffc107';
+    const color = item.status === 'Approved' ? '#28a745' :
+                  item.status === 'Declined' ? '#dc3545' : '#ffc107';
     container.innerHTML += `
       <div style="border-bottom:1px solid #eee; padding:8px 0;">
         <strong>₦${item.amount.toLocaleString()}</strong>
-        <span style="float:right; color:${statusColor}; font-weight:bold;">${item.status}</span><br>
+        <span style="float:right; color:${color}; font-weight:bold;">${item.status}</span><br>
         <small>Note: ${item.note || 'N/A'} 
           <button onclick="copyText('${item.note || ''}')" style="background:#0b8a3c;color:white;border:none;padding:3px 6px;border-radius:5px;">Copy</button>
         </small><br>
@@ -147,7 +157,7 @@ function copyText(text){
   alert("Copied: " + text);
 }
 
-function deposit(){ window.location.href='deposit.html'; }
+function deposit(){ window.location.href='payment.html'; }
 function withdraw(){ window.location.href='withdraw.html'; }
 function invest(){ window.location.href='plans.html'; }
 function invite(){ window.location.href='referral.html'; }
