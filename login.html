@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -80,24 +79,23 @@ a {
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
 
-  <button onclick="handleLogin()">Login</button>
+  <button onclick="login()">Login</button>
   <a href="register.html" class="register-link">Register</a>
 
   <p><a href="#" onclick="forgotPassword()">Forget Password?</a></p>
   <p class="version">Version: 1.0.0</p>
 </div>
 
-<script src="main.js"></script>
 <script>
-// Auto redirect if already logged in
+// ✅ Auto redirect if already logged in
 window.addEventListener('DOMContentLoaded', () => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  if (currentUser) {
-    window.location.href = "dashboard.html";
+  if (currentUser && currentUser.email) {
+    window.location.href = 'dashboard.html';
   }
 });
 
-function handleLogin() {
+function login() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
@@ -110,16 +108,9 @@ function handleLogin() {
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
-    // Ensure default properties exist
-    if (!user.balance) user.balance = 0;
-    if (!user.deposits) user.deposits = [];
-    if (!user.withdrawals) user.withdrawals = [];
-
-    // Save current user for session
     localStorage.setItem('currentUser', JSON.stringify(user));
-
     alert("Login successful!");
-    window.location.href = "dashboard.html";
+    window.location.href = 'dashboard.html';
   } else {
     alert("Invalid email or password");
   }
