@@ -95,7 +95,7 @@ body {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const userStr = localStorage.getItem('loggedInUser'); // ✅ FIXED key name
+  const userStr = localStorage.getItem('currentUser'); // ✅ FIXED: same key as login.html
   if (!userStr) {
     alert('Please login first!');
     window.location.href = 'login.html';
@@ -103,18 +103,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const user = JSON.parse(userStr);
-  if (!user || !user.id) {
+  if (!user) {
     alert('Invalid user session!');
     window.location.href = 'login.html';
     return;
   }
 
-  // Display user info
+  // ✅ Display user info safely
   document.getElementById('userName').textContent = user.username || user.name || 'User';
-  document.getElementById('userId').textContent = user.id;
+  document.getElementById('userId').textContent = user.id || 'N/A';
   document.getElementById('userEmail').textContent = user.email || 'example@mail.com';
 
-  // Load balances and histories
+  // ✅ Load balances and histories
   const deposits = JSON.parse(localStorage.getItem('deposits') || '[]').filter(d => d.userId === user.id);
   const withdrawals = JSON.parse(localStorage.getItem('withdrawals') || '[]').filter(w => w.userId === user.id);
 
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHistory(deposits, 'depositHistory');
   loadHistory(withdrawals, 'withdrawHistory');
 
-  // Chart section
+  // ✅ Chart section
   const ctx = document.getElementById('growthChart');
   new Chart(ctx, {
     type: 'line',
@@ -141,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ✅ Helper functions
 function loadHistory(list, elementId){
   const container = document.getElementById(elementId);
   if(list.length === 0){ container.innerHTML = "<p style='color:gray;'>No records found.</p>"; return; }
@@ -169,7 +168,7 @@ function invite(){ window.location.href='referral.html'; }
 
 // ✅ Logout
 function logoutUser() {
-  localStorage.removeItem('loggedInUser');
+  localStorage.removeItem('currentUser');
   alert("You have been logged out!");
   window.location.href = "login.html";
 }
