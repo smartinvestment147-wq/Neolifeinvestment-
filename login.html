@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -89,7 +89,7 @@ a {
 <script>
 // ✅ Auto redirect if already logged in
 window.addEventListener('DOMContentLoaded', () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
   if (currentUser && currentUser.email) {
     window.location.href = 'dashboard.html';
   }
@@ -108,7 +108,8 @@ function login() {
   const user = users.find(u => u.email === email && u.password === password);
 
   if (user) {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    // ✅ Use same key as dashboard
+    localStorage.setItem('loggedInUser', JSON.stringify(user));
     alert("Login successful!");
     window.location.href = 'dashboard.html';
   } else {
