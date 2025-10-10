@@ -1,223 +1,72 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payment - Smart Investment</title>
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: #f6f7fb;
-    margin: 0;
-    padding: 0;
-    color: #333;
-  }
-
-  .container {
-    max-width: 600px;
-    background: white;
-    margin: 20px auto;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    padding: 20px;
-  }
-
-  h2 {
-    text-align: center;
-    color: #4b0082;
-    margin-bottom: 10px;
-  }
-
-  .steps {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
-
-  .steps span {
-    color: gray;
-  }
-
-  .steps .active {
-    color: #4b0082;
-    font-weight: 600;
-  }
-
-  .amount-box {
-    background: #f4f1fc;
-    border-radius: 10px;
-    text-align: center;
-    padding: 20px;
-    margin-bottom: 15px;
-  }
-
-  .amount {
-    color: #4b0082;
-    font-size: 22px;
-    font-weight: bold;
-  }
-
-  .info {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    border: 1px solid #eee;
-  }
-
-  .info div {
-    margin: 8px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .label {
-    font-weight: 500;
-    color: #555;
-  }
-
-  .value {
-    color: #4b0082;
-    font-weight: 600;
-  }
-
-  .copy-btn {
-    background: #4b0082;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
-  .copy-btn:hover {
-    background: #5d0ba8;
-  }
-
-  .guide {
-    margin-top: 20px;
-    background: #fff;
-    border-radius: 10px;
-    padding: 15px;
-    border-left: 4px solid #4b0082;
-  }
-
-  .guide h4 {
-    color: #4b0082;
-    margin-bottom: 10px;
-  }
-
-  .guide ol {
-    margin: 0;
-    padding-left: 20px;
-  }
-
-  .guide li {
-    margin-bottom: 8px;
-    font-size: 14px;
-  }
-
-  .btn {
-    width: 100%;
-    margin-top: 20px;
-    background: #4b0082;
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .btn:hover {
-    background: #5d0ba8;
-  }
-
-  .countdown {
-    text-align: right;
-    font-weight: bold;
-    color: #4b0082;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment | Smart Investment</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100">
 
-  <div class="container">
-    <h2>Paynow Cashier</h2>
+  <!-- Header -->
+  <div class="bg-green-600 text-white py-4 text-center font-bold text-xl shadow">
+    Smart Investment Payment
+  </div>
 
-    <div class="steps">
-      <span>1. Submit ✓</span>
-      <span class="active">2. Payment</span>
-      <span>3. Completed</span>
+  <!-- Payment Section -->
+  <div class="max-w-md mx-auto mt-8 bg-white shadow-lg rounded-2xl p-6">
+    <h2 class="text-xl font-semibold text-center mb-4 text-gray-700">Deposit Payment</h2>
+
+    <div class="text-center mb-4">
+      <p class="text-gray-500">Amount to Pay:</p>
+      <p id="amountDisplay" class="text-2xl font-bold text-green-600">₦0.00</p>
     </div>
 
-    <div class="amount-box">
-      <div>Amount</div>
-      <div class="amount" id="amountDisplay">₦ 0.00</div>
-      <div class="countdown">Count Down: <span id="timer">10:00</span></div>
-    </div>
-
-    <div class="info">
-      <div>
-        <span class="label">Name:</span> 
-        <span class="value">Smart Investment LTD</span>
-      </div>
-
-      <div>
-        <span class="label">Bank:</span> 
-        <span class="value">Kuda Microfinance Bank</span>
-      </div>
-
-      <div>
-        <span class="label">Account:</span> 
-        <span class="value" id="accountNum">3002643310</span>
-        <button class="copy-btn" onclick="copyText('accountNum', this)">Copy</button>
-      </div>
-
-      <div>
-        <span class="label">Amount:</span> 
-        <span class="value" id="amountDisplay2">₦ 0.00</span>
-      </div>
-
-      <div>
-        <span class="label">Note:</span> 
-        <span class="value" id="note">Generating...</span>
-        <button class="copy-btn" onclick="copyText('note', this)">Copy</button>
+    <div class="mb-4">
+      <p class="text-gray-600 text-sm mb-2">Send to Account:</p>
+      <div class="bg-gray-100 p-3 rounded-lg">
+        <p class="font-semibold text-gray-700">Account Name: Smart Investment Ltd</p>
+        <p class="font-semibold text-gray-700">Bank: First Bank</p>
+        <p class="font-semibold text-gray-700">Account Number: <span id="acctNum">3021789365</span>
+          <button class="text-blue-600 ml-2 text-sm" onclick="copyText('acctNum', this)">Copy</button>
+        </p>
       </div>
     </div>
 
-    <div class="guide">
-      <h4>Payment Guide</h4>
-      <ol>
-        <li>Complete the payment within 10 minutes! <b style="color:red;">Otherwise your account won't be credited!</b></li>
-        <li>Enter the correct <b>Note</b> in your transfer description.</li>
-        <li>Do not reuse this account number twice.</li>
-        <li>After payment, click confirm to submit your proof.</li>
-      </ol>
+    <div class="mt-4 mb-4">
+      <p class="text-gray-600 text-sm mb-2">Payment Note / Reference:</p>
+      <div class="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
+        <span id="note" class="font-mono text-gray-800">INV00000</span>
+        <button class="text-blue-600 text-sm" onclick="copyText('note', this)">Copy</button>
+      </div>
     </div>
 
-    <button class="btn" onclick="handleConfirmPayment()">I have made this bank transfer</button>
+    <div class="text-center text-sm text-gray-600 mt-4">
+      <p>⏳ Complete within <span id="timer" class="font-bold text-red-500">10:00</span> minutes</p>
+    </div>
+
+    <button onclick="handleConfirmPayment()" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+      ✅ Confirm Payment
+    </button>
+
+    <button onclick="window.location.href='deposit.html'" class="w-full mt-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 rounded-lg transition">
+      ⬅️ Cancel
+    </button>
   </div>
 
   <script>
-    // Get the amount from deposit.html
+    // === Initialize Amount ===
     const amount = parseInt(localStorage.getItem("depositAmount")) || 0;
-
     document.getElementById("amountDisplay").innerText = "₦ " + amount.toLocaleString() + ".00";
-    document.getElementById("amountDisplay2").innerText = "₦ " + amount.toLocaleString() + ".00";
 
-    // Generate unique payment note
+    // === Generate Payment Note ===
     const randomPart = Math.floor(100000 + Math.random() * 900000);
     const timestamp = Date.now().toString().slice(-5);
     const noteKey = `INV${randomPart}${timestamp}`;
     document.getElementById("note").innerText = noteKey;
     localStorage.setItem("depositNote", noteKey);
 
-    // 10 minute countdown
+    // === Countdown Timer (10 mins) ===
     let time = 600;
     const timerElement = document.getElementById("timer");
     const countdown = setInterval(() => {
@@ -231,7 +80,7 @@
       time--;
     }, 1000);
 
-    // Copy text
+    // === Copy Text Function ===
     function copyText(id, btn) {
       const text = document.getElementById(id).innerText;
       navigator.clipboard.writeText(text);
@@ -239,30 +88,33 @@
       setTimeout(() => btn.innerText = "Copy", 2000);
     }
 
-    // Confirm payment
+    // === Confirm Payment (Fixed) ===
     function handleConfirmPayment() {
       const note = localStorage.getItem("depositNote");
       const amt = localStorage.getItem("depositAmount");
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-      if (!amt || !note) {
-        alert("No payment found. Please start again.");
+      if (!amt || !note || !currentUser || !currentUser.id) {
+        alert("⚠️ No valid payment session found. Please start again.");
+        window.location.href = "deposit.html";
         return;
       }
 
-      const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
-deposits.push({
-  userId: currentUser.id,
-  amount: amt,
-  note: note,
-  status: "Pending",
-  date: new Date().toLocaleString()
-});
+      const deposits = JSON.parse(localStorage.getItem("deposits") || "[]");
+
+      deposits.push({
+        userId: currentUser.id,
+        amount: amt,
+        note: note,
+        status: "Pending",
+        date: new Date().toLocaleString()
+      });
 
       localStorage.setItem("deposits", JSON.stringify(deposits));
+
       alert("✅ Payment confirmation sent!\nStatus: Pending verification.");
       window.location.href = "dashboard.html";
     }
   </script>
-
 </body>
 </html>
